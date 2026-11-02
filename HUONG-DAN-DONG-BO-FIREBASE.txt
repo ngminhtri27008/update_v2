@@ -1,0 +1,31 @@
+HƯỚNG DẪN KẾT NỐI ĐỒNG BỘ ĐỨC MẠNH MOBILE
+
+1. Mở DUC-MANH-MOBILE-SHARED.html bằng Chrome.
+2. Chọn tab Công cụ & Dữ liệu.
+3. Trong phần Đồng bộ dùng chung (Firebase), dán cấu hình Firebase Web App dạng JSON đã lưu trước đó.
+   Ví dụ cấu trúc:
+   {
+     "apiKey": "...",
+     "authDomain": "...",
+     "projectId": "...",
+     "storageBucket": "...",
+     "messagingSenderId": "...",
+     "appId": "..."
+   }
+4. Bấm Kết nối / Đồng bộ.
+5. Mở website trên từng điện thoại/máy tính và nhập cùng cấu hình Firebase.
+6. Các thiết bị sẽ dùng chung tài liệu dmm_shared/main trong Firestore.
+
+FIRESTORE RULES CHO CHẾ ĐỘ KHÔNG ĐĂNG NHẬP:
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /dmm_shared/{document} {
+      allow read, write: if true;
+    }
+  }
+}
+
+CẢNH BÁO QUAN TRỌNG: Rules trên cho phép bất kỳ ai truy cập được project đều có thể đọc/sửa/xóa dữ liệu. Không đưa dữ liệu khách hàng nhạy cảm vào hệ thống công khai. Firebase config là thông tin cấu hình công khai, không phải cơ chế bảo mật. Để bảo vệ dữ liệu thật, cần Firebase Authentication và Security Rules giới hạn người dùng.
+
+Đồng bộ hiện dùng một tài liệu trạng thái chung; chỉnh sửa đồng thời đúng cùng thời điểm có thể ghi đè nhau. Dữ liệu lớn hơn giới hạn một tài liệu Firestore (1 MiB) sẽ không đồng bộ. Nút mic hỗ trợ nhập giọng nói tiếng Việt nếu Chrome/trình duyệt hỗ trợ SpeechRecognition và được cấp quyền micro.

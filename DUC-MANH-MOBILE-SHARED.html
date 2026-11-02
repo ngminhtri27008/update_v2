@@ -1,0 +1,2893 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐỨC MẠNH MOBILE - Báo Giá & Quản Lý Kho Linh Kiện</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: #475569;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-primary); color: var(--text-main); padding-bottom: 60px; }
+
+        /* HEADER */
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 0.9rem 1.5rem;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+        }
+        .header-container {
+            max-width: 1500px; margin: 0 auto;
+            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;
+        }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-icon {
+            background: var(--accent); color: white; width: 44px; height: 44px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+        }
+        .logo-text h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.5px; color: #fff; }
+        .logo-text p { font-size: 0.78rem; color: var(--text-sub); }
+        .search-global { flex: 1; min-width: 220px; max-width: 420px; position: relative; }
+        .search-global input {
+            width: 100%; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px;
+            padding: 0.6rem 1rem 0.6rem 2.5rem; color: #fff; font-size: 0.95rem; outline: none; transition: all 0.2s;
+        }
+        .search-global input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.3); }
+        .search-global i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-sub); }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .save-status { font-size: 0.78rem; color: var(--text-sub); max-width: 230px; text-align: right; line-height: 1.3; }
+        .save-status.ok { color: #34d399; }
+        .save-status.warn { color: #fbbf24; }
+
+        /* TABS */
+        .tabs { max-width: 1500px; margin: 1rem auto 0; padding: 0 1rem; display: flex; gap: 6px; flex-wrap: wrap; }
+        .tab-btn {
+            background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-sub);
+            padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+        }
+        .tab-btn:hover { color: #fff; }
+        .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .tab-badge { background: var(--danger); color: #fff; border-radius: 10px; font-size: 0.7rem; padding: 1px 7px; }
+
+        /* LAYOUT */
+        main {
+            max-width: 1500px; margin: 1rem auto; padding: 0 1rem;
+            display: grid; grid-template-columns: 290px 1fr; gap: 1.25rem; align-items: start;
+        }
+        main.no-side { grid-template-columns: 1fr; }
+        main.no-side .sidebar { display: none; }
+        @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+        .sidebar { background: var(--bg-secondary); border-radius: 12px; padding: 1.1rem; border: 1px solid var(--border); }
+        .section-title {
+            font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-sub);
+            margin-bottom: 0.7rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center;
+        }
+        .brand-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.2rem; max-height: 210px; overflow-y: auto; }
+        .brand-btn {
+            background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main);
+            padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.2s;
+        }
+        .brand-btn:hover, .brand-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .model-list { max-height: 460px; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; padding-right: 4px; }
+        .model-btn {
+            background: transparent; border: 1px solid transparent; color: var(--text-main);
+            padding: 7px 10px; border-radius: 6px; text-align: left; cursor: pointer; font-size: 0.88rem;
+            display: flex; justify-content: space-between; align-items: center; gap: 6px;
+        }
+        .model-btn:hover { background: var(--bg-card); }
+        .model-btn.active { background: rgba(37,99,235,0.2); border-color: var(--accent); color: #60a5fa; font-weight: 600; }
+        .model-btn small { color: var(--text-sub); font-weight: 400; }
+        .stock-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+
+        .content-area { background: var(--bg-secondary); border-radius: 12px; padding: 1.25rem; border: 1px solid var(--border); min-width: 0; }
+        .view { display: none; }
+        .view.active { display: block; }
+
+        .model-header {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+            padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border);
+        }
+        .model-info h2 { font-size: 1.4rem; font-weight: 700; color: #fff; margin-top: 4px; }
+        .tag {
+            font-size: 0.78rem; color: var(--accent); background: rgba(37,99,235,0.15);
+            padding: 2px 8px; border-radius: 4px; display: inline-block; margin-right: 4px;
+        }
+        .tag.grey { color: var(--text-sub); background: rgba(148,163,184,0.15); }
+        .action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn {
+            padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; color: #fff;
+        }
+        .btn-primary { background: var(--accent); }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-success { background: var(--success); }
+        .btn-success:hover { filter: brightness(1.1); }
+        .btn-ghost { background: var(--bg-card); border: 1px solid var(--border); }
+        .btn-ghost:hover { background: #475569; }
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { filter: brightness(1.1); }
+        .btn-sm { padding: 4px 9px; font-size: 0.78rem; }
+
+        .notice {
+            background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.4); color: #fcd34d;
+            padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; margin-bottom: 1rem; line-height: 1.5;
+        }
+
+        /* TABLES */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
+        th {
+            background: var(--bg-primary); color: var(--text-sub); padding: 9px 10px; font-weight: 600;
+            border-bottom: 2px solid var(--border); white-space: nowrap;
+        }
+        td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        .input-price {
+            width: 110px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 4px;
+            padding: 6px 8px; color: #fff; font-size: 0.85rem; text-align: right;
+        }
+        .input-price:focus { border-color: var(--accent); outline: none; }
+        .input-price.edited { border-color: #60a5fa; }
+        .input-price.sm { width: 64px; padding: 5px 6px; }
+        .input-price.txt { text-align: left; }
+        .margin-tag { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; white-space: nowrap; }
+        .margin-good { background: rgba(16,185,129,0.2); color: #34d399; }
+        .margin-low { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .margin-na { background: rgba(148,163,184,0.15); color: var(--text-sub); }
+        .stock-cell { display: flex; align-items: center; gap: 4px; }
+        .stock-cell button {
+            background: var(--bg-card); border: 1px solid var(--border); color: #fff; border-radius: 4px;
+            width: 24px; height: 28px; cursor: pointer; font-size: 0.85rem;
+        }
+        .stock-cell button:hover { background: var(--accent); }
+        .stock-badge { font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; }
+        .stock-badge.low { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .stock-badge.out { background: rgba(239,68,68,0.2); color: #f87171; }
+
+        .matrix th:first-child, .matrix td:first-child {
+            position: sticky; left: 0; background: var(--bg-secondary); z-index: 2; min-width: 190px;
+            border-right: 1px solid var(--border);
+        }
+        .matrix th:first-child { background: var(--bg-primary); }
+        .matrix .input-price { width: 84px; padding: 5px 6px; }
+        .model-link { cursor: pointer; color: #93c5fd; background: none; border: none; text-align: left; font-size: 0.86rem; }
+        .model-link:hover { text-decoration: underline; }
+
+        /* FORM / CARDS */
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 1.2rem; }
+        .stat-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+        .stat-card .lbl { font-size: 0.75rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-card .val { font-size: 1.35rem; font-weight: 700; margin-top: 4px; }
+        .stat-card .val.warn { color: #fbbf24; }
+        .stat-card .val.bad { color: #f87171; }
+        .panel { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; margin-bottom: 1.2rem; }
+        .panel h3 { font-size: 0.95rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; align-items: end; }
+        .field label { display: block; font-size: 0.74rem; color: var(--text-sub); margin-bottom: 4px; }
+        .field input, .field select {
+            width: 100%; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px;
+            padding: 8px 10px; color: #fff; font-size: 0.88rem; outline: none;
+        }
+        .field input:focus, .field select:focus { border-color: var(--accent); }
+        .radio-row { display: flex; gap: 14px; font-size: 0.85rem; align-items: center; padding: 8px 0; }
+        .radio-row label { display: flex; gap: 5px; align-items: center; cursor: pointer; }
+        .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 1rem; }
+        .toolbar .field { min-width: 160px; }
+        .muted { color: var(--text-sub); font-size: 0.82rem; }
+        .empty { text-align: center; color: var(--text-sub); padding: 2rem 1rem; font-size: 0.9rem; }
+        .row-list { display: flex; flex-direction: column; gap: 6px; }
+        .row-item {
+            display: flex; justify-content: space-between; align-items: center; gap: 10px;
+            background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 0.85rem;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000;
+            align-items: center; justify-content: center; padding: 1rem;
+        }
+        .modal.open { display: flex; }
+        .modal-content {
+            background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px;
+            width: 100%; max-width: 500px; padding: 1.5rem;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .modal-header button { background: none; border: none; color: #fff; cursor: pointer; font-size: 1rem; }
+        textarea {
+            width: 100%; height: 280px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 6px;
+            color: #fff; padding: 10px; font-size: 0.9rem; resize: none; margin-bottom: 1rem;
+        }
+        .dlg-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1rem; }
+
+        #toast {
+            position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+            background: #0b1220; border: 1px solid var(--border); color: #fff; padding: 10px 18px; border-radius: 8px;
+            font-size: 0.88rem; opacity: 0; pointer-events: none; transition: all 0.25s; z-index: 2000; max-width: 90vw;
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast.err { border-color: var(--danger); color: #fca5a5; }
+        /* CRM */
+        .st { font-size: 0.74rem; padding: 2px 9px; border-radius: 10px; font-weight: 600; white-space: nowrap; display: inline-block; }
+        .st-received { background: rgba(148,163,184,0.2); color: #cbd5e1; }
+        .st-repairing { background: rgba(59,130,246,0.2); color: #93c5fd; }
+        .st-ready { background: rgba(16,185,129,0.2); color: #34d399; }
+        .st-delivered { background: rgba(139,92,246,0.2); color: #c4b5fd; }
+        .st-cancelled { background: rgba(239,68,68,0.2); color: #f87171; }
+        .badge-vip { background: rgba(245,158,11,0.2); color: #fbbf24; font-size: 0.7rem; padding: 1px 7px; border-radius: 8px; margin-left: 4px; }
+        .badge-loyal { background: rgba(16,185,129,0.2); color: #34d399; font-size: 0.7rem; padding: 1px 7px; border-radius: 8px; margin-left: 4px; }
+        .modal-content.wide { max-width: 880px; max-height: 92vh; overflow-y: auto; }
+        .bars { display: flex; align-items: flex-end; gap: 5px; height: 150px; padding: 6px 0; }
+        .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+        .bar { width: 100%; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; }
+        .bar-lbl { font-size: 0.62rem; color: var(--text-sub); margin-top: 4px; white-space: nowrap; }
+        .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+        .insight { background: var(--bg-secondary); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 6px; padding: 8px 10px; font-size: 0.84rem; line-height: 1.45; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .insight.warn { border-left-color: var(--warning); }
+        .insight.bad { border-left-color: var(--danger); }
+        .insight.ok { border-left-color: var(--success); }
+        .top-row { display: flex; justify-content: space-between; gap: 8px; padding: 5px 0; border-bottom: 1px dashed var(--border); font-size: 0.85rem; }
+        .tot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; }
+        .tot-row { display: flex; justify-content: space-between; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 0.86rem; }
+        .tot-row b { color: #60a5fa; }
+        .tot-row.big b { color: #34d399; font-size: 1rem; }
+        .suggest-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+        .iconbtn { background: var(--bg-card); border: 1px solid var(--border); color: #fff; border-radius: 5px; padding: 4px 8px; cursor: pointer; font-size: 0.78rem; text-decoration: none; display: inline-block; }
+        .iconbtn:hover { background: var(--accent); }
+        #printArea { display: none; }
+        @media print {
+            body > *:not(#printArea) { display: none !important; }
+            #printArea { display: block !important; color: #000; background: #fff; padding: 18px; font-family: Arial, sans-serif; font-size: 13px; }
+            #printArea table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+            #printArea th, #printArea td { border: 1px solid #000; padding: 5px 8px; color: #000; background: #fff; }
+            #printArea h2, #printArea p { color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <div class="logo-text">
+                <h1 id="shopTitle">ĐỨC MẠNH MOBILE</h1>
+                <p>Báo Giá Linh Kiện & Quản Lý Kho Sửa Chữa</p>
+            </div>
+        </div>
+        <div class="search-global">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="globalSearch" placeholder="Tìm nhanh model (VD: 15 Pro Max, S24 Ultra, Reno 12...)" autocomplete="off"><button type="button" class="iconbtn" id="btnMic" title="Tìm bằng giọng nói" aria-label="Tìm bằng giọng nói"><i class="fa-solid fa-microphone"></i></button>
+        </div>
+        <div class="header-actions">
+            <div class="save-status" id="saveStatus">Chưa có thay đổi</div>
+            <button class="btn btn-success" id="btnSave"><i class="fa-solid fa-floppy-disk"></i> Lưu</button>
+        </div>
+    </div>
+</header>
+
+<nav class="tabs" id="tabs">
+    <button class="tab-btn" data-tab="dash"><i class="fa-solid fa-chart-line"></i> Tổng quan</button>
+    <button class="tab-btn" data-tab="orders"><i class="fa-solid fa-clipboard-list"></i> Phiếu sửa chữa</button>
+    <button class="tab-btn" data-tab="cust"><i class="fa-solid fa-address-book"></i> Khách hàng</button>
+    <button class="tab-btn" data-tab="quote"><i class="fa-solid fa-tags"></i> Báo giá</button>
+    <button class="tab-btn" data-tab="matrix"><i class="fa-solid fa-table-cells"></i> Bảng giá tổng</button>
+    <button class="tab-btn" data-tab="stock"><i class="fa-solid fa-boxes-stacked"></i> Kho <span class="tab-badge" id="lowBadge" style="display:none">0</span></button>
+    <button class="tab-btn" data-tab="tools"><i class="fa-solid fa-gear"></i> Công cụ & Dữ liệu</button>
+</nav>
+
+<main id="main">
+    <aside class="sidebar">
+        <div class="section-title">Thương Hiệu <span id="brandCount" style="color:var(--accent)">0</span></div>
+        <div class="brand-list" id="brandList"></div>
+        <div class="section-title">Danh Sách Model <span id="modelCount" style="color:var(--accent)">0</span></div>
+        <div class="model-list" id="modelList"></div>
+    </aside>
+
+    <!-- VIEW: QUOTE -->
+    <section class="content-area view active" id="view-quote">
+        <div class="model-header">
+            <div class="model-info">
+                <span class="tag" id="selectedBrand">APPLE</span><span class="tag grey" id="tierInfo"></span>
+                <h2 id="selectedModel">iPhone 15 Pro Max</h2>
+            </div>
+            <div class="action-btns">
+                <button class="btn btn-primary" id="btnNewOrderQ"><i class="fa-solid fa-file-circle-plus"></i> Tạo phiếu sửa</button>
+                <button class="btn btn-ghost" id="btnResetModel"><i class="fa-solid fa-rotate-left"></i> Đặt lại giá mẫu</button>
+                <button class="btn btn-success" id="btnZalo"><i class="fa-solid fa-copy"></i> Copy Gửi Zalo</button>
+            </div>
+        </div>
+        <div class="notice"><i class="fa-solid fa-circle-info"></i> Giá trong bảng là <b>giá mẫu ước tính</b> theo phân khúc máy, <b>không phải giá thị trường chính xác</b>. Hãy sửa lại theo giá nhập thực tế của bạn; ô nào bạn đã sửa sẽ có viền xanh và được lưu lại.</div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th><th>Hạng Mục Sửa Chữa / Linh Kiện</th><th>Giá Nhập (VNĐ)</th>
+                        <th>Giá Thay / Sửa (VNĐ)</th><th>Lợi Nhuận</th><th>Bảo Hành</th><th>Tồn Kho</th>
+                    </tr>
+                </thead>
+                <tbody id="priceTableBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- VIEW: MATRIX -->
+    <section class="content-area view" id="view-matrix">
+        <div class="section-title" style="margin-bottom:1rem">Bảng giá tổng — tất cả hạng mục của mọi model, sửa trực tiếp</div>
+        <div class="toolbar">
+            <div class="field"><label>Hãng</label><select id="mxBrand"></select></div>
+            <div class="field"><label>Lọc model</label><input type="text" id="mxSearch" placeholder="VD: Pro Max"></div>
+            <div class="field">
+                <label>Hiển thị / sửa</label>
+                <div class="radio-row">
+                    <label><input type="radio" name="mxMode" value="sell" checked> Giá bán</label>
+                    <label><input type="radio" name="mxMode" value="cost"> Giá nhập</label>
+                </div>
+            </div>
+            <button class="btn btn-ghost" id="btnMxCsv"><i class="fa-solid fa-file-csv"></i> Xuất CSV hãng này</button>
+        </div>
+        <div class="muted" id="mxInfo" style="margin-bottom:8px"></div>
+        <div class="table-responsive" style="max-height:70vh; overflow-y:auto;">
+            <table class="matrix" id="mxTable"></table>
+        </div>
+    </section>
+
+    <!-- VIEW: STOCK -->
+    <section class="content-area view" id="view-stock">
+        <div class="notice" id="lowStockNotice" style="display:none;border-left:4px solid #f59e0b;margin-bottom:12px"><b><i class="fa-solid fa-triangle-exclamation"></i> Cảnh báo sắp hết hàng</b><div id="lowStockNoticeText" style="margin-top:6px"></div></div>
+        <div class="cards" id="stockCards"></div>
+
+        <div class="panel">
+            <h3><i class="fa-solid fa-dolly"></i> Nhập / Xuất kho</h3>
+            <div class="form-grid">
+                <div class="field"><label>Hãng</label><select id="stBrand"></select></div>
+                <div class="field"><label>Model</label><select id="stModel"></select></div>
+                <div class="field"><label>Hạng mục / linh kiện</label><select id="stService"></select></div>
+                <div class="field"><label>Số lượng</label><input type="number" id="stQty" min="1" value="1"></div>
+                <div class="field"><label>Giá nhập mới (tuỳ chọn)</label><input type="text" id="stCost" placeholder="Để trống = giữ nguyên"></div>
+                <div class="field"><label>Ghi chú</label><input type="text" id="stNote" placeholder="NCC, lý do, mã đơn..."></div>
+                <div class="field">
+                    <label>Loại</label>
+                    <div class="radio-row">
+                        <label><input type="radio" name="stType" value="in" checked> Nhập</label>
+                        <label><input type="radio" name="stType" value="out"> Xuất</label>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="stSubmit"><i class="fa-solid fa-check"></i> Ghi sổ kho</button>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="field"><label>Hãng</label><select id="stFilterBrand"></select></div>
+            <div class="field"><label>Tìm</label><input type="text" id="stFilterText" placeholder="Model hoặc hạng mục"></div>
+            <div class="radio-row"><label><input type="checkbox" id="stOnlyLow"> Chỉ hiện sắp hết / hết hàng</label></div>
+            <button class="btn btn-ghost" id="btnStockCsv"><i class="fa-solid fa-file-csv"></i> Xuất CSV kho</button>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr><th>Model</th><th>Hạng mục</th><th>Tồn</th><th>Mức tối thiểu</th><th>Vị trí</th><th>Giá nhập</th><th>Giá trị tồn</th><th></th></tr>
+                </thead>
+                <tbody id="stockBody"></tbody>
+            </table>
+        </div>
+
+        <div class="section-title" style="margin:1.5rem 0 0.7rem">Lịch sử nhập / xuất gần đây</div>
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>Thời gian</th><th>Model</th><th>Hạng mục</th><th>Loại</th><th>SL</th><th>Ghi chú</th></tr></thead>
+                <tbody id="logBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- VIEW: TOOLS -->
+    <section class="content-area view" id="view-tools">
+        <div class="panel" style="border:1px solid var(--accent)">
+            <h3><i class="fa-solid fa-cloud-arrow-up"></i> Đồng bộ dùng chung (Firebase)</h3>
+            <div class="notice" style="margin:8px 0">Dán cấu hình Firebase Web App của cửa hàng vào ô bên dưới rồi bấm Kết nối. Tất cả thiết bị dùng cùng cấu hình sẽ xem và sửa dữ liệu chung. Chế độ này không yêu cầu đăng nhập; ai có đường dẫn và cấu hình công khai đều có thể sửa.</div>
+            <div class="field"><label>Cấu hình Firebase (dạng JSON)</label><textarea id="fbConfigInput" rows="5" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}'></textarea></div>
+            <div class="action-btns" style="margin-top:8px"><button class="btn btn-primary" id="btnFirebaseConnect"><i class="fa-solid fa-link"></i> Kết nối / Đồng bộ</button><button class="btn btn-ghost" id="btnFirebaseDisconnect">Ngắt kết nối</button></div>
+            <div class="muted" id="firebaseStatus" style="margin-top:8px">Chưa kết nối Firebase. Dữ liệu hiện vẫn lưu trên trình duyệt này.</div>
+            <div class="muted" style="margin-top:8px">Lưu ý: Firestore cần được tạo trước. Với chế độ không đăng nhập, quy tắc Firestore phải cho phép đọc/ghi công khai vào đúng tài liệu dùng chung; đây là lựa chọn rủi ro, không dùng cho dữ liệu khách hàng nhạy cảm. Một tài liệu Firestore có giới hạn dung lượng 1 MiB.</div>
+        </div>
+        <div class="panel">
+            <h3><i class="fa-solid fa-percent"></i> Điều chỉnh giá hàng loạt</h3>
+            <div class="form-grid">
+                <div class="field"><label>Phạm vi</label>
+                    <select id="blScope">
+                        <option value="model">Model đang chọn</option>
+                        <option value="brand">Cả hãng đang chọn</option>
+                        <option value="all">Tất cả model</option>
+                    </select>
+                </div>
+                <div class="field"><label>Hạng mục</label><select id="blService"></select></div>
+                <div class="field"><label>Cách điều chỉnh</label>
+                    <select id="blMode">
+                        <option value="sellPct">Tăng/giảm giá bán theo %</option>
+                        <option value="costPct">Tăng/giảm giá nhập theo %</option>
+                        <option value="margin">Đặt lợi nhuận mục tiêu % (tính lại giá bán)</option>
+                    </select>
+                </div>
+                <div class="field"><label>Giá trị (%)</label><input type="text" id="blValue" placeholder="VD: 10 hoặc -5"></div>
+                <button class="btn btn-primary" id="blApply"><i class="fa-solid fa-wand-magic-sparkles"></i> Áp dụng</button>
+            </div>
+            <div class="muted" id="blScopeInfo" style="margin-top:8px"></div>
+        </div>
+
+        <div class="panel">
+            <h3><i class="fa-solid fa-circle-plus"></i> Thêm model / hãng mới</h3>
+            <div class="form-grid">
+                <div class="field"><label>Hãng (chọn hoặc gõ hãng mới)</label><input type="text" id="amBrand" list="amBrandList" placeholder="VD: Samsung"><datalist id="amBrandList"></datalist></div>
+                <div class="field"><label>Tên model</label><input type="text" id="amName" placeholder="VD: Galaxy S27 Ultra"></div>
+                <div class="field"><label>Phân khúc (quyết định giá mẫu)</label><select id="amTier"></select></div>
+                <button class="btn btn-primary" id="amAdd"><i class="fa-solid fa-plus"></i> Thêm</button>
+            </div>
+            <div class="section-title" style="margin:1rem 0 0.5rem">Model tự thêm</div>
+            <div class="row-list" id="customList"></div>
+        </div>
+
+        <div class="panel">
+            <h3><i class="fa-solid fa-store"></i> Thông tin cửa hàng (hiện trong tin nhắn Zalo)</h3>
+            <div class="form-grid">
+                <div class="field"><label>Tên cửa hàng</label><input type="text" id="shName"></div>
+                <div class="field"><label>Số điện thoại / Zalo</label><input type="text" id="shPhone"></div>
+                <div class="field"><label>Địa chỉ</label><input type="text" id="shAddr"></div>
+                <div class="field"><label>Điều khoản in trên phiếu</label><input type="text" id="shTerms"></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3><i class="fa-solid fa-database"></i> Sao lưu & khôi phục dữ liệu</h3>
+            <div class="muted" style="margin-bottom:10px" id="storageInfo"></div>
+            <div class="action-btns">
+                <button class="btn btn-primary" id="btnExportJson"><i class="fa-solid fa-download"></i> Xuất sao lưu (.json)</button>
+                <button class="btn btn-ghost" id="btnImport"><i class="fa-solid fa-upload"></i> Nhập từ file sao lưu</button>
+                <button class="btn btn-ghost" id="btnAllCsv"><i class="fa-solid fa-file-csv"></i> Xuất toàn bộ bảng giá (.csv)</button>
+                <button class="btn btn-ghost" id="btnResetPrices"><i class="fa-solid fa-rotate-left"></i> Đặt lại toàn bộ giá về mẫu</button>
+                <button class="btn btn-danger" id="btnResetAll"><i class="fa-solid fa-trash"></i> Xoá toàn bộ dữ liệu</button>
+                <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+            </div>
+        </div>
+    </section>
+    <!-- VIEW: DASHBOARD -->
+    <section class="content-area view" id="view-dash">
+        <div class="toolbar">
+            <div class="field"><label>Khoảng thời gian</label>
+                <select id="dashRange">
+                    <option value="today">Hôm nay</option>
+                    <option value="7d">7 ngày gần đây</option>
+                    <option value="month" selected>Tháng này</option>
+                    <option value="all">Tất cả</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" id="btnDashNew"><i class="fa-solid fa-file-circle-plus"></i> Tạo phiếu sửa mới</button>
+        </div>
+        <div class="cards" id="dashCards"></div>
+        <div class="two-col">
+            <div class="panel"><h3><i class="fa-solid fa-chart-column"></i> Doanh thu 14 ngày gần nhất</h3><div class="bars" id="dashBars"></div></div>
+            <div class="panel"><h3><i class="fa-solid fa-lightbulb"></i> Gợi ý thông minh</h3><div class="row-list" id="dashInsights"></div></div>
+        </div>
+        <div class="two-col">
+            <div class="panel"><h3>Dịch vụ làm nhiều nhất</h3><div id="dashTopSvc"></div></div>
+            <div class="panel"><h3>Dòng máy sửa nhiều nhất</h3><div id="dashTopModel"></div></div>
+        </div>
+        <div class="panel">
+            <h3><i class="fa-solid fa-shield-halved"></i> Tra cứu bảo hành</h3>
+            <div class="field" style="max-width:380px"><input type="text" id="dwQuery" placeholder="Nhập SĐT, IMEI hoặc mã phiếu"></div>
+            <div id="dwResult" style="margin-top:10px"></div>
+        </div>
+    </section>
+
+    <!-- VIEW: ORDERS -->
+    <section class="content-area view" id="view-orders">
+        <div class="toolbar">
+            <div class="field"><label>Tìm phiếu</label><input type="text" id="ofText" placeholder="Mã phiếu, tên, SĐT, máy, IMEI..."></div>
+            <div class="field"><label>Trạng thái</label><select id="ofStatus"></select></div>
+            <button class="btn btn-primary" id="btnOrderNew"><i class="fa-solid fa-plus"></i> Tạo phiếu mới</button>
+        </div>
+        <div class="muted" id="orderInfo" style="margin-bottom:8px"></div>
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>Mã</th><th>Ngày nhận</th><th>Khách</th><th>Máy</th><th>Dịch vụ</th><th>Tổng</th><th>Còn lại</th><th>Trạng thái</th><th></th></tr></thead>
+                <tbody id="orderBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- VIEW: CUSTOMERS -->
+    <section class="content-area view" id="view-cust">
+        <div class="toolbar">
+            <div class="field"><label>Tìm khách</label><input type="text" id="cfText" placeholder="Tên hoặc số điện thoại"></div>
+            <div class="radio-row"><label><input type="checkbox" id="cfVip"> Chỉ VIP / khách quen</label></div>
+            <button class="btn btn-primary" id="btnCustNew"><i class="fa-solid fa-user-plus"></i> Thêm khách</button>
+            <button class="btn btn-ghost" id="btnCustCsv"><i class="fa-solid fa-file-csv"></i> Xuất CSV khách</button>
+        </div>
+        <div class="muted" id="custInfo" style="margin-bottom:8px"></div>
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>Khách hàng</th><th>SĐT</th><th>Số phiếu</th><th>Tổng chi tiêu</th><th>Lần cuối</th><th>BH còn hạn</th><th>Ghi chú</th><th></th></tr></thead>
+                <tbody id="custBody"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<!-- MODAL PHIẾU SỬA -->
+<div class="modal" id="orderModal">
+    <div class="modal-content wide">
+        <div class="modal-header"><h3 id="odTitle">Phiếu sửa chữa</h3><button id="odClose"><i class="fa-solid fa-xmark"></i></button></div>
+        <div id="odBody"></div>
+    </div>
+</div>
+
+<!-- MODAL KHÁCH -->
+<div class="modal" id="custModal">
+    <div class="modal-content wide">
+        <div class="modal-header"><h3 id="cuTitle">Khách hàng</h3><button id="cuClose"><i class="fa-solid fa-xmark"></i></button></div>
+        <div id="cuBody"></div>
+    </div>
+</div>
+
+<div id="printArea"></div>
+
+<!-- MODAL ZALO -->
+<div class="modal" id="zaloModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-share-nodes"></i> Mẫu Báo Giá Khách Hàng</h3>
+            <button id="zaloClose"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <textarea id="zaloText" readonly></textarea>
+        <button class="btn btn-primary" style="width:100%; justify-content:center;" id="zaloCopy"><i class="fa-solid fa-paste"></i> Sao Chép Tin Nhắn</button>
+    </div>
+</div>
+
+<!-- MODAL DIALOG -->
+<div class="modal" id="dlg">
+    <div class="modal-content">
+        <div class="modal-header"><h3 id="dlgTitle">Xác nhận</h3></div>
+        <div id="dlgBody" style="font-size:0.92rem; line-height:1.5;"></div>
+        <div class="dlg-actions">
+            <button class="btn btn-ghost" id="dlgCancel">Huỷ</button>
+            <button class="btn btn-primary" id="dlgOk">Đồng ý</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+(function () {
+'use strict';
+
+/* ================= HELPERS ================= */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => n ? String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '0';
+const parseNum = v => parseInt(String(v).replace(/\D/g, ''), 10) || 0;
+const roundTo = (n, s) => Math.round(n / s) * s;
+const norm = s => String(s).toLowerCase().replace(/[^a-z0-9+]/g, '');
+const pad = n => String(n).padStart(2, '0');
+
+let toastTimer = null;
+function toast(msg, isErr) {
+    const t = $('#toast');
+    t.textContent = msg;
+    t.className = 'show' + (isErr ? ' err' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.className = ''; }, 2600);
+}
+
+/* ================= DỮ LIỆU HÃNG / MODEL ================= */
+const SERVICES = [
+    "Thay màn", "Thay pin", "Thay lưng", "Thay kính cam",
+    "Thay sạc", "Thay loa trên", "Thay loa dưới", "Thay nút nguồn",
+    "Thay nút volume", "Thay đèn flash", "Thay vỏ", "Sửa Face ID",
+    "Thay cáp loa trên", "Ép kính", "Ép cáp", "Ép IC kính"
+];
+
+// base: giá nhập mẫu ở phân khúc 2 | sens: độ nhạy theo phân khúc | labor: công thợ cộng vào giá bán
+const SVC = {
+    "Thay màn":          { base: 300000, sens: 1.0, labor: 100000, bh: "6 Tháng" },
+    "Thay pin":          { base: 120000, sens: 0.6, labor: 50000,  bh: "6 Tháng" },
+    "Thay lưng":         { base: 150000, sens: 0.7, labor: 80000,  bh: "3 Tháng" },
+    "Thay kính cam":     { base: 80000,  sens: 0.6, labor: 60000,  bh: "3 Tháng" },
+    "Thay sạc":          { base: 100000, sens: 0.4, labor: 80000,  bh: "3 Tháng" },
+    "Thay loa trên":     { base: 60000,  sens: 0.3, labor: 50000,  bh: "3 Tháng" },
+    "Thay loa dưới":     { base: 70000,  sens: 0.3, labor: 50000,  bh: "3 Tháng" },
+    "Thay nút nguồn":    { base: 50000,  sens: 0.2, labor: 50000,  bh: "3 Tháng" },
+    "Thay nút volume":   { base: 50000,  sens: 0.2, labor: 50000,  bh: "3 Tháng" },
+    "Thay đèn flash":    { base: 60000,  sens: 0.3, labor: 50000,  bh: "3 Tháng" },
+    "Thay vỏ":           { base: 250000, sens: 0.8, labor: 100000, bh: "3 Tháng" },
+    "Sửa Face ID":       { base: 300000, sens: 0.2, labor: 200000, bh: "1 Tháng" },
+    "Thay cáp loa trên": { base: 60000,  sens: 0.3, labor: 50000,  bh: "3 Tháng" },
+    "Ép kính":           { base: 200000, sens: 0.9, labor: 100000, bh: "1 Tháng" },
+    "Ép cáp":            { base: 120000, sens: 0.5, labor: 80000,  bh: "1 Tháng" },
+    "Ép IC kính":        { base: 250000, sens: 0.7, labor: 100000, bh: "1 Tháng" }
+};
+const TIER_NAMES = { 1: "Phổ thông", 2: "Tầm trung thấp", 3: "Tầm trung", 4: "Cận cao cấp", 5: "Cao cấp", 6: "Gập / Siêu cao cấp" };
+const TIER_MULT = [0.7, 1, 1.8, 3.2, 5, 8];
+
+const BUILTIN = {};
+const BRAND_FACTOR = {};
+function addBuiltin(brand, factor, text) {
+    BUILTIN[brand] = text.trim().split('\n').filter(l => l.trim()).map(l => {
+        const p = l.split('|');
+        return { name: p[0].trim(), tier: parseInt(p[1], 10) || 2 };
+    });
+    BRAND_FACTOR[brand] = factor;
+}
+
+addBuiltin("Apple", 1.7, `
+iPhone 17 Pro Max|5
+iPhone 17 Pro|5
+iPhone Air|4
+iPhone 17|4
+iPhone 16e|3
+iPhone 16 Pro Max|5
+iPhone 16 Pro|5
+iPhone 16 Plus|4
+iPhone 16|4
+iPhone 15 Pro Max|5
+iPhone 15 Pro|4
+iPhone 15 Plus|4
+iPhone 15|3
+iPhone 14 Pro Max|5
+iPhone 14 Pro|4
+iPhone 14 Plus|3
+iPhone 14|3
+iPhone SE 3 (2022)|2
+iPhone 13 Pro Max|4
+iPhone 13 Pro|4
+iPhone 13|3
+iPhone 13 mini|3
+iPhone 12 Pro Max|4
+iPhone 12 Pro|3
+iPhone 12|3
+iPhone 12 mini|2
+iPhone 11 Pro Max|3
+iPhone 11 Pro|3
+iPhone 11|2
+iPhone SE 2 (2020)|1
+iPhone XS Max|2
+iPhone XS|2
+iPhone XR|2
+iPhone X|2
+iPhone 8 Plus|1
+iPhone 8|1
+iPhone 7 Plus|1
+iPhone 7|1
+iPhone 6s Plus|1
+iPhone 6s|1
+iPhone 6 Plus|1
+iPhone 6|1
+`);
+addBuiltin("iPad", 1.5, `
+iPad Pro 13 M4|5
+iPad Pro 11 M4|5
+iPad Pro 12.9 (2022)|5
+iPad Pro 11 (2022)|4
+iPad Air 13 M2|4
+iPad Air 11 M2|4
+iPad Air 5|3
+iPad Air 4|3
+iPad 11 (A16)|3
+iPad 10|3
+iPad 9|2
+iPad 8|2
+iPad 7|2
+iPad mini 7|3
+iPad mini 6|3
+`);
+addBuiltin("Samsung", 1.2, `
+Galaxy S26 Ultra|5
+Galaxy S26+|5
+Galaxy S26|4
+Galaxy S25 Ultra|5
+Galaxy S25 Edge|4
+Galaxy S25+|4
+Galaxy S25|4
+Galaxy S25 FE|3
+Galaxy S24 Ultra|5
+Galaxy S24+|4
+Galaxy S24|4
+Galaxy S24 FE|3
+Galaxy S23 Ultra|5
+Galaxy S23+|4
+Galaxy S23|3
+Galaxy S23 FE|3
+Galaxy S22 Ultra|4
+Galaxy S22+|3
+Galaxy S22|3
+Galaxy S21 Ultra|4
+Galaxy S21+|3
+Galaxy S21|3
+Galaxy S21 FE|2
+Galaxy S20 Ultra|3
+Galaxy S20+|3
+Galaxy S20|2
+Galaxy S20 FE|2
+Galaxy S10+|2
+Galaxy S10|2
+Galaxy S10e|2
+Galaxy S9+|2
+Galaxy S9|2
+Galaxy S8+|1
+Galaxy S8|1
+Galaxy Note 20 Ultra|3
+Galaxy Note 20|3
+Galaxy Note 10+|2
+Galaxy Note 10|2
+Galaxy Note 9|2
+Galaxy Note 8|1
+Galaxy Z Fold 7|6
+Galaxy Z Flip 7|6
+Galaxy Z Flip 7 FE|5
+Galaxy Z Fold 6|6
+Galaxy Z Flip 6|5
+Galaxy Z Fold 5|6
+Galaxy Z Flip 5|5
+Galaxy Z Fold 4|5
+Galaxy Z Flip 4|4
+Galaxy Z Fold 3|5
+Galaxy Z Flip 3|4
+Galaxy A56|3
+Galaxy A36|3
+Galaxy A26|2
+Galaxy A16|2
+Galaxy A06|1
+Galaxy A55|3
+Galaxy A35|2
+Galaxy A25|2
+Galaxy A15|2
+Galaxy A05s|1
+Galaxy A54|2
+Galaxy A34|2
+Galaxy A24|2
+Galaxy A14|1
+Galaxy A73|3
+Galaxy A53|2
+Galaxy A33|2
+Galaxy A23|2
+Galaxy A13|1
+Galaxy A72|2
+Galaxy A52|2
+Galaxy A32|2
+Galaxy A12|1
+Galaxy A71|2
+Galaxy A51|2
+Galaxy A31|1
+Galaxy A21s|1
+Galaxy A11|1
+Galaxy M55|2
+Galaxy M35|2
+Galaxy M15|2
+Galaxy M54|2
+Galaxy M34|2
+Galaxy M14|1
+`);
+addBuiltin("Xiaomi", 0.95, `
+Xiaomi 15T Pro|4
+Xiaomi 15T|4
+Xiaomi 15 Ultra|5
+Xiaomi 15|4
+Xiaomi 14T Pro|4
+Xiaomi 14T|3
+Xiaomi 14 Ultra|5
+Xiaomi 14|4
+Xiaomi 13T Pro|3
+Xiaomi 13T|3
+Xiaomi 13 Ultra|4
+Xiaomi 13 Pro|4
+Xiaomi 13|3
+Xiaomi 12 Pro|3
+Xiaomi 12|3
+Xiaomi 11T Pro|3
+Xiaomi 11 Lite|2
+Mi 11|3
+Mi 10T|2
+Xiaomi MIX Fold 4|6
+Xiaomi MIX Flip|5
+`);
+addBuiltin("Redmi", 0.85, `
+Redmi Note 14 Pro+|3
+Redmi Note 14 Pro|2
+Redmi Note 14|2
+Redmi Note 13 Pro+|3
+Redmi Note 13 Pro|2
+Redmi Note 13|2
+Redmi Note 12 Pro+|2
+Redmi Note 12 Pro|2
+Redmi Note 12|2
+Redmi Note 11 Pro|2
+Redmi Note 11|1
+Redmi Note 10 Pro|2
+Redmi Note 10|1
+Redmi Note 9|1
+Redmi 14C|1
+Redmi 13C|1
+Redmi 13|1
+Redmi 12C|1
+Redmi 12|1
+Redmi 10C|1
+Redmi 10|1
+Redmi 9A|1
+Redmi A3|1
+Redmi K80 Pro|4
+Redmi K70|3
+Redmi K60|3
+`);
+addBuiltin("POCO", 0.85, `
+POCO F7 Pro|3
+POCO F7|3
+POCO F6 Pro|3
+POCO F6|3
+POCO F5 Pro|3
+POCO F5|2
+POCO X7 Pro|3
+POCO X7|2
+POCO X6 Pro|2
+POCO X6|2
+POCO X5 Pro|2
+POCO M6 Pro|2
+POCO M6|1
+POCO C75|1
+POCO C65|1
+`);
+addBuiltin("OPPO", 0.95, `
+OPPO Find X8 Ultra|5
+OPPO Find X8 Pro|5
+OPPO Find X8|4
+OPPO Find X7 Ultra|5
+OPPO Find X7|4
+OPPO Find X6 Pro|4
+OPPO Find X5 Pro|4
+OPPO Find N5|6
+OPPO Find N3|6
+OPPO Find N3 Flip|5
+OPPO Find N2 Flip|5
+OPPO Reno 14 Pro|3
+OPPO Reno 14|3
+OPPO Reno 13 Pro|3
+OPPO Reno 13|3
+OPPO Reno 12 Pro|3
+OPPO Reno 12|3
+OPPO Reno 11 Pro|3
+OPPO Reno 11|2
+OPPO Reno 10 Pro+|3
+OPPO Reno 10|2
+OPPO Reno 8 Pro|3
+OPPO Reno 8|2
+OPPO Reno 7|2
+OPPO Reno 6|2
+OPPO A5 Pro|1
+OPPO A60|1
+OPPO A79|2
+OPPO A78|1
+OPPO A58|1
+OPPO A38|1
+OPPO A18|1
+OPPO A17|1
+OPPO A16|1
+OPPO A57|1
+OPPO A77|1
+OPPO A96|2
+OPPO A74|1
+OPPO A54|1
+OPPO A53|1
+OPPO F21 Pro|2
+`);
+addBuiltin("vivo", 0.95, `
+vivo X200 Pro|5
+vivo X200|4
+vivo X100 Ultra|5
+vivo X100 Pro|5
+vivo X100|4
+vivo X90 Pro+|4
+vivo X90 Pro|4
+vivo X90|4
+vivo X80 Pro|4
+vivo X70 Pro+|3
+vivo X Fold3 Pro|6
+vivo V50|3
+vivo V40 Pro|3
+vivo V40|3
+vivo V30 Pro|3
+vivo V30|3
+vivo V29|2
+vivo V27|2
+vivo V25|2
+vivo V23|2
+vivo V21|2
+vivo Y200|2
+vivo Y100|2
+vivo Y36|1
+vivo Y28|1
+vivo Y22s|1
+vivo Y21|1
+vivo Y17s|1
+vivo Y03|1
+vivo T3|2
+iQOO 13|4
+iQOO 12|4
+iQOO Neo 9 Pro|3
+iQOO Z9|2
+`);
+addBuiltin("Realme", 0.85, `
+realme GT 7 Pro|4
+realme GT 6|3
+realme GT 5 Pro|3
+realme GT Neo 6|3
+realme 14 Pro+|3
+realme 13 Pro+|3
+realme 12 Pro+|3
+realme 11 Pro+|3
+realme 10 Pro+|2
+realme Narzo 70 Pro|2
+realme Narzo 60|2
+realme C75|1
+realme C67|1
+realme C65|1
+realme C55|1
+realme C53|1
+realme C35|1
+realme C33|1
+realme C25|1
+`);
+addBuiltin("OnePlus", 1.0, `
+OnePlus 13|5
+OnePlus 13R|4
+OnePlus 12|4
+OnePlus 12R|3
+OnePlus 11|4
+OnePlus 10 Pro|4
+OnePlus 10T|3
+OnePlus 9 Pro|3
+OnePlus 9|3
+OnePlus 8T|2
+OnePlus 8 Pro|3
+OnePlus 8|2
+OnePlus 7T Pro|2
+OnePlus Nord 4|3
+OnePlus Nord 3|3
+OnePlus Nord CE 4|2
+OnePlus Nord CE 3|2
+OnePlus Open|6
+`);
+addBuiltin("Huawei", 1.1, `
+Huawei Mate 70 Pro|5
+Huawei Mate 60 Pro|5
+Huawei Mate 50 Pro|4
+Huawei Mate 40 Pro|4
+Huawei Mate 30 Pro|3
+Huawei Mate X5|6
+Huawei Mate XT|6
+Huawei Pura 70 Ultra|5
+Huawei P60 Pro|4
+Huawei P50 Pro|4
+Huawei P40 Pro|3
+Huawei P30 Pro|3
+Huawei nova 13|3
+Huawei nova 12|3
+Huawei nova 11|2
+Huawei nova 10|2
+Huawei nova Y91|1
+Huawei nova Y70|1
+Huawei Y9a|1
+`);
+addBuiltin("Honor", 1.0, `
+Honor Magic7 Pro|5
+Honor Magic6 Pro|5
+Honor Magic5 Pro|4
+Honor Magic V3|6
+Honor Magic V2|6
+Honor 400 Pro|3
+Honor 200 Pro|3
+Honor 90|3
+Honor 70|3
+Honor 50|2
+Honor X9b|2
+Honor X8b|1
+Honor X7b|1
+`);
+addBuiltin("Google", 1.3, `
+Pixel 10 Pro Fold|6
+Pixel 10 Pro XL|5
+Pixel 10 Pro|5
+Pixel 10|4
+Pixel 9 Pro Fold|6
+Pixel 9 Pro XL|5
+Pixel 9 Pro|5
+Pixel 9|4
+Pixel 9a|3
+Pixel 8 Pro|4
+Pixel 8|4
+Pixel 8a|3
+Pixel 7 Pro|4
+Pixel 7|3
+Pixel 7a|3
+Pixel 6 Pro|3
+Pixel 6|3
+Pixel 6a|2
+Pixel 5|2
+Pixel 4a|2
+Pixel 4 XL|2
+Pixel 4|2
+Pixel Fold|6
+`);
+addBuiltin("Sony", 1.3, `
+Xperia 1 VII|5
+Xperia 1 VI|5
+Xperia 1 V|5
+Xperia 1 IV|4
+Xperia 1 III|4
+Xperia 1 II|3
+Xperia 5 V|4
+Xperia 5 IV|3
+Xperia 5 III|3
+Xperia 10 VI|2
+Xperia 10 V|2
+Xperia 10 IV|2
+`);
+addBuiltin("Motorola", 0.95, `
+Motorola razr 60 Ultra|6
+Motorola razr 50 Ultra|6
+Motorola razr 40 Ultra|5
+Motorola Edge 50 Pro|3
+Motorola Edge 40 Pro|3
+Motorola Edge 40|3
+Motorola Edge 30 Ultra|3
+Motorola Edge 30|2
+Motorola Moto G85|2
+Motorola Moto G84|2
+Motorola Moto G54|1
+Motorola Moto G24|1
+Motorola Moto G14|1
+Motorola Moto G Power|1
+Motorola Moto G Stylus|2
+`);
+addBuiltin("Nokia / HMD", 0.9, `
+Nokia G42|1
+Nokia G22|1
+Nokia G21|1
+Nokia X30|2
+Nokia C32|1
+Nokia 8.3|2
+Nokia 105|1
+Nokia 110|1
+HMD Pulse Pro|1
+HMD Skyline|2
+HMD Fusion|1
+`);
+addBuiltin("Asus", 1.1, `
+ROG Phone 9 Pro|5
+ROG Phone 9|5
+ROG Phone 8 Pro|5
+ROG Phone 8|4
+ROG Phone 7 Ultimate|4
+ROG Phone 7|4
+ROG Phone 6|3
+ROG Phone 5|3
+Zenfone 11 Ultra|4
+Zenfone 10|3
+Zenfone 9|3
+Zenfone 8|3
+`);
+addBuiltin("Nothing", 1.1, `
+Nothing Phone (3)|4
+Nothing Phone (3a) Pro|3
+Nothing Phone (3a)|2
+Nothing Phone (2a)|2
+Nothing Phone (2)|3
+Nothing Phone (1)|2
+CMF Phone 1|1
+`);
+addBuiltin("Tecno", 0.8, `
+Tecno Phantom V Fold|5
+Tecno Phantom X2 Pro|3
+Tecno Camon 30|2
+Tecno Camon 20|1
+Tecno Spark 30|1
+Tecno Spark 20 Pro|1
+Tecno Spark 10|1
+Tecno Pova 6 Pro|2
+`);
+addBuiltin("Infinix", 0.8, `
+Infinix Zero 40|2
+Infinix Zero 30|2
+Infinix Note 40 Pro|2
+Infinix Note 30|1
+Infinix Hot 50|1
+Infinix Hot 40|1
+Infinix Smart 8|1
+`);
+addBuiltin("itel", 0.7, `
+itel S23|1
+itel A70|1
+itel P55|1
+itel A60|1
+`);
+addBuiltin("ZTE / nubia", 0.9, `
+nubia Red Magic 10 Pro|4
+nubia Red Magic 9 Pro|4
+nubia Red Magic 8 Pro|3
+nubia Z60 Ultra|4
+ZTE Axon 60 Ultra|3
+ZTE Blade V50|1
+`);
+addBuiltin("Lenovo", 1.0, `
+Lenovo Legion Y90|4
+Lenovo Legion Y70|3
+Lenovo Legion Duel 2|4
+`);
+addBuiltin("Meizu", 0.9, `
+Meizu 21 Pro|4
+Meizu 20 Pro|4
+Meizu 18 Pro|3
+`);
+addBuiltin("Fairphone", 1.2, `
+Fairphone 5|3
+Fairphone 4|2
+`);
+addBuiltin("LG", 1.0, `
+LG Wing|3
+LG Velvet|2
+LG V60 ThinQ|2
+LG G8X ThinQ|2
+LG V40 ThinQ|2
+LG G7 ThinQ|2
+LG G6|1
+`);
+addBuiltin("BlackBerry", 1.0, `
+BlackBerry KEY2|2
+BlackBerry KEYone|2
+`);
+addBuiltin("Vsmart / Bphone", 0.8, `
+Vsmart Live 4|1
+Vsmart Joy 4|1
+Vsmart Aris Pro|2
+Vsmart Active 3|1
+Vsmart Star 5|1
+Bphone B86|2
+Bphone B86s|2
+`);
+addBuiltin("Khác", 1.0, ``);
+
+/* ================= STATE & LƯU TRỮ ================= */
+const STORAGE_KEY = 'dmm_pricing_v2';
+function defaultState() {
+    return {
+        version: 2,
+        overrides: {},    // overrides[key][svc] = {cost, sell, warranty}
+        inventory: {},    // inventory[key][svc] = {qty, min, loc}
+        log: [],          // lịch sử nhập/xuất
+        customModels: {}, // customModels[brand] = [{name, tier}]
+        customers: {},    // customers[id] = {id, name, phone, addr, note, vip, created}
+        orders: [],       // phiếu sửa chữa
+        seq: 0,           // bộ đếm mã phiếu
+        settings: { shop: "ĐỨC MẠNH MOBILE", phone: "", addr: "", terms: "Quý khách vui lòng kiểm tra máy khi nhận. Bảo hành không áp dụng khi máy rơi, vào nước hoặc đã bị can thiệp sau sửa chữa." }
+    };
+}
+let state = defaultState();
+let storageOK = true;
+let saveTimer = null;
+let lastSaved = null;
+let fbDb = null, fbUnsubscribe = null, fbDoc = null, fbWriteTimer = null;
+let fbApplyingRemote = false, fbLastLocalChange = 0, fbLastRemoteUpdate = 0;
+const FB_CONFIG_KEY = 'dmm_firebase_config_v1';
+
+function loadState() {
+    try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            const o = JSON.parse(raw);
+            state = Object.assign(defaultState(), o);
+            state.settings = Object.assign(defaultState().settings, o.settings || {});
+            lastSaved = new Date();
+        }
+    } catch (e) { storageOK = false; }
+}
+function persist(manual) {
+    clearTimeout(saveTimer);
+    try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        storageOK = true;
+        lastSaved = new Date();
+        setSaveStatus();
+        if (manual) toast(fbDb ? 'Đã lưu trên thiết bị và gửi đồng bộ' : 'Đã lưu dữ liệu vào trình duyệt');
+    } catch (e) {
+        storageOK = false;
+        setSaveStatus();
+        if (manual) toast('Trình duyệt không lưu được — hãy xuất sao lưu thủ công', true);
+    }
+    if (fbDb && !fbApplyingRemote) scheduleCloudWrite();
+}
+function markDirty() {
+    const el = $('#saveStatus');
+    el.className = 'save-status warn';
+    el.textContent = fbDb ? 'Đang lưu & đồng bộ...' : 'Đang lưu...';
+    fbLastLocalChange = Date.now();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => persist(false), 400);
+}
+function setSaveStatus() {
+    const el = $('#saveStatus');
+    if (!storageOK) {
+        el.className = 'save-status warn';
+        el.textContent = '⚠ Không lưu được trong trình duyệt. Hãy xuất sao lưu.';
+    } else if (lastSaved) {
+        el.className = 'save-status ok';
+        el.textContent = 'Đã lưu lúc ' + pad(lastSaved.getHours()) + ':' + pad(lastSaved.getMinutes()) + (fbDb ? ' · Cloud' : '');
+    } else {
+        el.className = 'save-status';
+        el.textContent = 'Chưa có thay đổi';
+    }
+}
+function parseFirebaseConfig(raw) {
+    let t = String(raw || '').trim();
+    t = t.replace(/^\s*const\s+firebaseConfig\s*=\s*/, '').replace(/;\s*$/, '');
+    const a = t.indexOf('{'), b = t.lastIndexOf('}');
+    if (a >= 0 && b > a) t = t.slice(a, b + 1);
+    const cfg = JSON.parse(t);
+    if (!cfg.apiKey || !cfg.projectId || !cfg.appId) throw new Error('Thiếu apiKey, projectId hoặc appId');
+    return cfg;
+}
+function firebaseStatus(msg, bad) {
+    const el = $('#firebaseStatus');
+    if (el) { el.textContent = msg; el.style.color = bad ? '#ef4444' : ''; }
+}
+function connectFirebase(configText) {
+    if (!window.firebase || !firebase.firestore) throw new Error('Không tải được Firebase SDK. Hãy kiểm tra kết nối Internet rồi tải lại trang.');
+    const cfg = parseFirebaseConfig(configText);
+    if (fbUnsubscribe) fbUnsubscribe();
+    const appName = 'dmm-shared-app';
+    let app = firebase.apps.find(a => a.name === appName);
+    if (!app) app = firebase.initializeApp(cfg, appName);
+    fbDb = app.firestore();
+    fbDoc = fbDb.collection('dmm_shared').doc('main');
+    localStorage.setItem(FB_CONFIG_KEY, configText);
+    firebaseStatus('Đang kết nối Firestore...', false);
+    fbUnsubscribe = fbDoc.onSnapshot(snap => {
+        if (!snap.exists) {
+            firebaseStatus('Đã kết nối. Đang đưa dữ liệu hiện tại lên cloud...', false);
+            scheduleCloudWrite(true);
+            return;
+        }
+        const data = snap.data() || {};
+        const updated = Number(data.updatedAt || 0);
+        if (updated && updated < fbLastLocalChange) return;
+        if (data.state && typeof data.state === 'object') {
+            fbApplyingRemote = true;
+            state = Object.assign(defaultState(), data.state);
+            state.settings = Object.assign(defaultState().settings, data.state.settings || {});
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+            fbLastRemoteUpdate = updated;
+            rebuildIndex();
+            afterDataReplace();
+            fbApplyingRemote = false;
+            lastSaved = new Date();
+            setSaveStatus();
+            firebaseStatus('Đã đồng bộ trực tiếp. Dữ liệu mới nhất đang được chia sẻ với các thiết bị khác.', false);
+        }
+    }, err => {
+        firebaseStatus('Lỗi Firestore: ' + (err.message || err) + '. Kiểm tra Firestore Rules và cấu hình.', true);
+    });
+}
+function scheduleCloudWrite(immediate) {
+    if (!fbDb || !fbDoc || fbApplyingRemote) return;
+    clearTimeout(fbWriteTimer);
+    fbWriteTimer = setTimeout(async () => {
+        try {
+            const payload = JSON.stringify(state);
+            if (payload.length > 900000) throw new Error('Dữ liệu quá lớn cho một tài liệu Firestore.');
+            const stamp = Date.now();
+            fbLastLocalChange = stamp;
+            await fbDoc.set({ state: JSON.parse(payload), updatedAt: stamp }, { merge: true });
+            firebaseStatus('Đã đồng bộ lên cloud lúc ' + new Date(stamp).toLocaleTimeString('vi-VN'), false);
+            setSaveStatus();
+        } catch (e) { firebaseStatus('Chưa đồng bộ được: ' + e.message, true); }
+    }, immediate ? 0 : 700);
+}
+function disconnectFirebase() {
+    if (fbUnsubscribe) fbUnsubscribe();
+    fbUnsubscribe = null; fbDb = null; fbDoc = null;
+    firebaseStatus('Đã ngắt Firebase. Dữ liệu tiếp tục lưu trên trình duyệt này.', false);
+    setSaveStatus();
+}
+
+/* ================= MODEL INDEX ================= */
+const keyOf = (brand, name) => brand + '::' + name;
+let MODEL_INDEX = {};
+function brandList() {
+    const set = Object.keys(BUILTIN);
+    Object.keys(state.customModels).forEach(b => { if (set.indexOf(b) < 0) set.push(b); });
+    return set;
+}
+function modelsOf(brand) {
+    return (BUILTIN[brand] || []).concat(state.customModels[brand] || []);
+}
+function rebuildIndex() {
+    MODEL_INDEX = {};
+    brandList().forEach(brand => {
+        modelsOf(brand).forEach(m => {
+            MODEL_INDEX[keyOf(brand, m.name)] = { brand: brand, name: m.name, tier: m.tier };
+        });
+    });
+}
+function allKeys() { return Object.keys(MODEL_INDEX); }
+
+/* ================= GIÁ ================= */
+const hasFaceID = (brand, name) => brand === 'Apple' && /^iPhone (X|1[1-9]|Air)/.test(name);
+
+function defaultItem(key, svc) {
+    const meta = MODEL_INDEX[key];
+    const s = SVC[svc];
+    if (!meta || !s) return { cost: 0, sell: 0, warranty: "3 Tháng" };
+    if (svc === "Sửa Face ID" && !hasFaceID(meta.brand, meta.name)) {
+        return { cost: 0, sell: 0, warranty: s.bh };
+    }
+    const tm = TIER_MULT[Math.max(0, Math.min(5, meta.tier - 1))];
+    const f = BRAND_FACTOR[meta.brand] || 1;
+    const cost = Math.max(10000, roundTo(s.base * (1 + (tm - 1) * s.sens) * f, 10000));
+    const sell = roundTo(cost * 1.3 + s.labor, 10000);
+    return { cost: cost, sell: sell, warranty: s.bh };
+}
+function getItem(key, svc) {
+    const d = defaultItem(key, svc);
+    const ov = state.overrides[key] && state.overrides[key][svc];
+    return ov ? Object.assign({}, d, ov) : d;
+}
+function isEdited(key, svc) { return !!(state.overrides[key] && state.overrides[key][svc]); }
+function setItem(key, svc, patch) {
+    const cur = getItem(key, svc);
+    if (!state.overrides[key]) state.overrides[key] = {};
+    state.overrides[key][svc] = Object.assign({}, cur, patch);
+    markDirty();
+}
+function marginOf(it) { return it.sell > 0 ? Math.round(((it.sell - it.cost) / it.sell) * 100) : null; }
+
+/* ================= KHO ================= */
+function getStock(key, svc) {
+    return (state.inventory[key] && state.inventory[key][svc]) || { qty: 0, min: 0, loc: '' };
+}
+function ensureStock(key, svc) {
+    if (!state.inventory[key]) state.inventory[key] = {};
+    if (!state.inventory[key][svc]) state.inventory[key][svc] = { qty: 0, min: 0, loc: '' };
+    return state.inventory[key][svc];
+}
+function addLog(key, svc, type, qty, note) {
+    state.log.unshift({ t: Date.now(), key: key, svc: svc, type: type, qty: qty, note: note || '' });
+    if (state.log.length > 500) state.log.length = 500;
+}
+function adjustStock(key, svc, delta, type, note) {
+    const s = ensureStock(key, svc);
+    if (s.qty + delta < 0) { toast('Không đủ hàng trong kho để xuất', true); return false; }
+    s.qty += delta;
+    addLog(key, svc, type, Math.abs(delta), note);
+    markDirty();
+    updateLowBadge();
+    return true;
+}
+function setStockQty(key, svc, qty) {
+    const s = ensureStock(key, svc);
+    const delta = qty - s.qty;
+    if (delta === 0) return;
+    s.qty = qty;
+    addLog(key, svc, 'Điều chỉnh', Math.abs(delta), 'Sửa tay ' + (delta > 0 ? '+' : '-') + Math.abs(delta));
+    markDirty();
+    updateLowBadge();
+}
+function stockStatus(st) {
+    if (st.min > 0 && st.qty === 0) return 'out';
+    if (st.min > 0 && st.qty <= st.min) return 'low';
+    if (st.qty === 0) return 'none';
+    return 'ok';
+}
+function trackedEntries() {
+    const out = [];
+    Object.keys(state.inventory).forEach(key => {
+        if (!MODEL_INDEX[key]) return;
+        Object.keys(state.inventory[key]).forEach(svc => {
+            const st = state.inventory[key][svc];
+            if (st.qty > 0 || st.min > 0) out.push({ key: key, svc: svc, st: st });
+        });
+    });
+    return out;
+}
+function updateLowBadge() {
+    const n = trackedEntries().filter(e => { const s = stockStatus(e.st); return s === 'low' || s === 'out'; }).length;
+    const b = $('#lowBadge');
+    b.textContent = n;
+    b.style.display = n > 0 ? '' : 'none';
+}
+
+/* ================= UI STATE ================= */
+const ui = { tab: 'quote', brand: 'Apple', key: keyOf('Apple', 'iPhone 15 Pro Max'), search: '' };
+
+/* ================= TAB ================= */
+function showTab(tab) {
+    ui.tab = tab;
+    $$('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + tab));
+    $('#main').classList.toggle('no-side', tab !== 'quote');
+    if (tab === 'dash') renderDash();
+    if (tab === 'orders') renderOrders();
+    if (tab === 'cust') renderCustomers();
+    if (tab === 'quote') { renderSidebar(); renderQuote(); }
+    if (tab === 'matrix') renderMatrix();
+    if (tab === 'stock') renderStock();
+    if (tab === 'tools') renderTools();
+}
+
+/* ================= SIDEBAR ================= */
+function renderBrands() {
+    const c = $('#brandList');
+    c.innerHTML = '';
+    const list = brandList();
+    $('#brandCount').textContent = list.length;
+    list.forEach(brand => {
+        const b = document.createElement('button');
+        b.className = 'brand-btn' + (brand === ui.brand && !ui.search ? ' active' : '');
+        b.textContent = brand;
+        b.addEventListener('click', () => selectBrand(brand));
+        c.appendChild(b);
+    });
+}
+function renderSidebar() {
+    renderBrands();
+    const c = $('#modelList');
+    c.innerHTML = '';
+    let items = [];
+    if (ui.search) {
+        matchModels(ui.search, 300).forEach(k => items.push({ brand: MODEL_INDEX[k].brand, name: MODEL_INDEX[k].name }));
+    } else {
+        items = modelsOf(ui.brand).map(m => ({ brand: ui.brand, name: m.name }));
+    }
+    $('#modelCount').textContent = items.length;
+    if (!items.length) {
+        c.innerHTML = '<div class="empty">Không có model nào.<br>Thêm model ở tab Công cụ.</div>';
+        return;
+    }
+    items.slice(0, 300).forEach(it => {
+        const key = keyOf(it.brand, it.name);
+        const b = document.createElement('button');
+        b.className = 'model-btn' + (key === ui.key ? ' active' : '');
+        const hasStock = Object.keys(state.inventory[key] || {}).some(s => state.inventory[key][s].qty > 0);
+        b.innerHTML = '<span>' + esc(it.name) + (ui.search ? ' <small>(' + esc(it.brand) + ')</small>' : '') + '</span>' +
+            (hasStock ? '<span class="stock-dot" title="Có hàng trong kho"></span>' : '');
+        b.addEventListener('click', () => { ui.brand = it.brand; selectModel(key); });
+        c.appendChild(b);
+    });
+}
+function selectBrand(brand) {
+    ui.brand = brand;
+    ui.search = '';
+    $('#globalSearch').value = '';
+    const ms = modelsOf(brand);
+    if (ms.length) ui.key = keyOf(brand, ms[0].name);
+    renderSidebar();
+    renderQuote();
+}
+function selectModel(key) {
+    ui.key = key;
+    const meta = MODEL_INDEX[key];
+    if (meta) ui.brand = meta.brand;
+    renderSidebar();
+    renderQuote();
+}
+
+/* ================= TAB BÁO GIÁ ================= */
+function rowHTML(index, svc, key) {
+    const it = getItem(key, svc);
+    const st = getStock(key, svc);
+    const na = !it.cost && !it.sell;
+    return '<td>' + (index + 1) + '</td>' +
+        '<td><strong>' + esc(svc) + '</strong></td>' +
+        '<td><input type="text" class="input-price" data-f="cost" value="' + fmt(it.cost) + '"></td>' +
+        '<td><input type="text" class="input-price" data-f="sell" style="color:#60a5fa;font-weight:600" value="' + fmt(it.sell) + '"></td>' +
+        '<td data-role="margin"></td>' +
+        '<td><input type="text" class="input-price txt" data-f="warranty" style="width:90px;text-align:center" value="' + esc(it.warranty) + '"></td>' +
+        '<td><div class="stock-cell"><button data-act="dec" title="Xuất 1">−</button>' +
+        '<input type="text" class="input-price sm" data-f="qty" value="' + st.qty + '">' +
+        '<button data-act="inc" title="Nhập 1">+</button><span data-role="sbadge"></span></div></td>';
+}
+function refreshRow(tr, key, svc) {
+    const it = getItem(key, svc);
+    const st = getStock(key, svc);
+    const q = f => tr.querySelector('[data-f="' + f + '"]');
+    q('cost').value = fmt(it.cost);
+    q('sell').value = fmt(it.sell);
+    q('warranty').value = it.warranty;
+    q('qty').value = st.qty;
+    const edited = isEdited(key, svc);
+    ['cost', 'sell', 'warranty'].forEach(f => q(f).classList.toggle('edited', edited));
+    const m = marginOf(it);
+    const cell = tr.querySelector('[data-role="margin"]');
+    if (m === null) cell.innerHTML = '<span class="margin-tag margin-na">—</span>';
+    else cell.innerHTML = '<span class="margin-tag ' + (m >= 30 ? 'margin-good' : 'margin-low') + '" title="Lãi ' + fmt(it.sell - it.cost) + ' VNĐ">' + m + '% · ' + fmt(it.sell - it.cost) + '</span>';
+    const sb = tr.querySelector('[data-role="sbadge"]');
+    const status = stockStatus(st);
+    sb.innerHTML = status === 'out' ? '<span class="stock-badge out">Hết</span>' : status === 'low' ? '<span class="stock-badge low">Sắp hết</span>' : '';
+}
+function renderQuote() {
+    const meta = MODEL_INDEX[ui.key];
+    if (!meta) return;
+    $('#selectedBrand').textContent = meta.brand.toUpperCase();
+    $('#tierInfo').textContent = TIER_NAMES[meta.tier];
+    $('#selectedModel').textContent = meta.name;
+    const tbody = $('#priceTableBody');
+    tbody.innerHTML = '';
+    SERVICES.forEach((svc, i) => {
+        const tr = document.createElement('tr');
+        tr.dataset.svc = svc;
+        tr.innerHTML = rowHTML(i, svc, ui.key);
+        tbody.appendChild(tr);
+        refreshRow(tr, ui.key, svc);
+    });
+}
+function onQuoteChange(e) {
+    const el = e.target;
+    const f = el.dataset.f;
+    if (!f) return;
+    const tr = el.closest('tr');
+    const svc = tr.dataset.svc;
+    if (f === 'cost' || f === 'sell') setItem(ui.key, svc, { [f]: parseNum(el.value) });
+    else if (f === 'warranty') setItem(ui.key, svc, { warranty: el.value.trim() || '—' });
+    else if (f === 'qty') setStockQty(ui.key, svc, parseNum(el.value));
+    refreshRow(tr, ui.key, svc);
+    renderSidebarStockDots();
+}
+function onQuoteClick(e) {
+    const btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    const tr = btn.closest('tr');
+    const svc = tr.dataset.svc;
+    if (btn.dataset.act === 'inc') adjustStock(ui.key, svc, 1, 'Nhập', 'Nhập nhanh');
+    else adjustStock(ui.key, svc, -1, 'Xuất', 'Xuất nhanh');
+    refreshRow(tr, ui.key, svc);
+    renderSidebarStockDots();
+}
+function renderSidebarStockDots() {
+    if (ui.tab === 'quote') renderSidebar();
+}
+
+/* ================= ZALO ================= */
+function buildZaloText() {
+    const meta = MODEL_INDEX[ui.key];
+    const sh = state.settings;
+    let text = '📱 *BÁO GIÁ SỬA CHỮA - ' + (sh.shop || 'CỬA HÀNG') + '*\n';
+    text += '📌 *Dòng máy:* ' + meta.name + '\n';
+    text += '-----------------------------------\n';
+    let has = false;
+    SERVICES.forEach(svc => {
+        const it = getItem(ui.key, svc);
+        if (it.sell > 0) {
+            text += '🔹 ' + svc + ': *' + fmt(it.sell) + ' VNĐ* (BH: ' + it.warranty + ')\n';
+            has = true;
+        }
+    });
+    if (!has) text += '(Chưa có giá cập nhật cho dòng máy này, vui lòng liên hệ trực tiếp!)\n';
+    text += '-----------------------------------\n';
+    text += '⚡ *' + (sh.shop || 'Cửa hàng') + '* - Cam kết linh kiện chuẩn, lấy ngay!\n';
+    text += sh.phone ? '📞 Hotline/Zalo: ' + sh.phone + '\n' : '📞 Liên hệ để được tư vấn trực tiếp!\n';
+    if (sh.addr) text += '📍 ' + sh.addr;
+    return text.trim();
+}
+function copyText(text, done) {
+    const fallback = () => {
+        const ta = $('#zaloText');
+        ta.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+        done(ok);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => done(true), fallback);
+    } else fallback();
+}
+
+/* ================= TAB BẢNG GIÁ TỔNG ================= */
+const mx = { brand: 'Apple', search: '', mode: 'sell' };
+function fillBrandSelect(sel, withAll, current) {
+    sel.innerHTML = '';
+    if (withAll) {
+        const o = document.createElement('option');
+        o.value = '*'; o.textContent = '— Tất cả hãng —';
+        sel.appendChild(o);
+    }
+    brandList().forEach(b => {
+        const o = document.createElement('option');
+        o.value = b; o.textContent = b + ' (' + modelsOf(b).length + ')';
+        sel.appendChild(o);
+    });
+    if (current) sel.value = current;
+}
+function mxKeys() {
+    const q = norm(mx.search);
+    let keys = mx.brand === '*' ? allKeys() : modelsOf(mx.brand).map(m => keyOf(mx.brand, m.name));
+    if (q) keys = keys.filter(k => norm(MODEL_INDEX[k].name).indexOf(q) >= 0);
+    return keys;
+}
+function renderMatrix() {
+    fillBrandSelect($('#mxBrand'), true, mx.brand);
+    const table = $('#mxTable');
+    let keys = mxKeys();
+    let note = '';
+    if (mx.brand === '*' && !mx.search) { keys = []; note = 'Chọn một hãng hoặc gõ ô "Lọc model" để xem (tránh tải quá nhiều dòng cùng lúc).'; }
+    if (keys.length > 250) { note = 'Đang hiện 250/' + keys.length + ' model đầu — hãy lọc thêm để xem phần còn lại.'; keys = keys.slice(0, 250); }
+    const label = mx.mode === 'sell' ? 'giá bán' : 'giá nhập';
+    $('#mxInfo').textContent = (keys.length ? keys.length + ' model · đang hiển thị ' + label + ' (VNĐ). Ô để trống = không áp dụng. ' : '') + note;
+    let html = '<thead><tr><th>Model</th>' + SERVICES.map(s => '<th>' + esc(s) + '</th>').join('') + '</tr></thead><tbody>';
+    keys.forEach(k => {
+        const meta = MODEL_INDEX[k];
+        html += '<tr data-key="' + esc(k) + '"><td><button class="model-link" data-go="1">' + esc(meta.name) + '</button></td>';
+        SERVICES.forEach(svc => {
+            const it = getItem(k, svc);
+            const v = mx.mode === 'sell' ? it.sell : it.cost;
+            html += '<td><input type="text" class="input-price' + (isEdited(k, svc) ? ' edited' : '') + '" data-svc="' + esc(svc) + '" value="' + (v ? fmt(v) : '') + '" placeholder="—"></td>';
+        });
+        html += '</tr>';
+    });
+    html += '</tbody>';
+    table.innerHTML = html;
+}
+function onMatrixChange(e) {
+    const el = e.target;
+    if (!el.dataset.svc) return;
+    const key = el.closest('tr').dataset.key;
+    const v = parseNum(el.value);
+    setItem(key, el.dataset.svc, { [mx.mode === 'sell' ? 'sell' : 'cost']: v });
+    el.value = v ? fmt(v) : '';
+    el.classList.add('edited');
+}
+function onMatrixClick(e) {
+    const b = e.target.closest('[data-go]');
+    if (!b) return;
+    const key = b.closest('tr').dataset.key;
+    ui.search = ''; $('#globalSearch').value = '';
+    ui.key = key; ui.brand = MODEL_INDEX[key].brand;
+    showTab('quote');
+}
+
+/* ================= CSV ================= */
+function csvCell(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }
+function download(name, text, type) {
+    try {
+        const blob = new Blob([text], { type: type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = name;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+        toast('Đã tạo file ' + name);
+    } catch (e) { toast('Trình duyệt chặn tải file', true); }
+}
+function pricesCsv(keys) {
+    const rows = [['Hãng', 'Model', 'Hạng mục', 'Giá nhập', 'Giá bán', 'Lợi nhuận %', 'Bảo hành', 'Tồn kho'].map(csvCell).join(',')];
+    keys.forEach(k => {
+        const meta = MODEL_INDEX[k];
+        SERVICES.forEach(svc => {
+            const it = getItem(k, svc);
+            if (!it.cost && !it.sell) return;
+            const m = marginOf(it);
+            rows.push([meta.brand, meta.name, svc, it.cost, it.sell, m === null ? '' : m, it.warranty, getStock(k, svc).qty].map(csvCell).join(','));
+        });
+    });
+    return '﻿' + rows.join('\r\n');
+}
+
+/* ================= TAB KHO ================= */
+const stf = { brand: '*', text: '', onlyLow: false };
+function fillModelSelect(brandSel, modelSel) {
+    const brand = brandSel.value;
+    modelSel.innerHTML = '';
+    modelsOf(brand).forEach(m => {
+        const o = document.createElement('option');
+        o.value = keyOf(brand, m.name); o.textContent = m.name;
+        modelSel.appendChild(o);
+    });
+}
+function fmtTime(t) {
+    const d = new Date(t);
+    return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+function renderStock() {
+    const bs = $('#stBrand');
+    const prevBrand = bs.value || ui.brand;
+    fillBrandSelect(bs, false, prevBrand);
+    if (!bs.value) bs.value = ui.brand;
+    fillModelSelect(bs, $('#stModel'));
+    if (MODEL_INDEX[ui.key] && MODEL_INDEX[ui.key].brand === bs.value) $('#stModel').value = ui.key;
+    const ss = $('#stService');
+    if (!ss.options.length) SERVICES.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; ss.appendChild(o); });
+    fillBrandSelect($('#stFilterBrand'), true, stf.brand);
+
+    const entries = trackedEntries();
+    const totalQty = entries.reduce((a, e) => a + e.st.qty, 0);
+    const totalVal = entries.reduce((a, e) => a + e.st.qty * getItem(e.key, e.svc).cost, 0);
+    const low = entries.filter(e => stockStatus(e.st) === 'low').length;
+    const out = entries.filter(e => stockStatus(e.st) === 'out').length;
+    $('#stockCards').innerHTML =
+        '<div class="stat-card"><div class="lbl">Loại linh kiện theo dõi</div><div class="val">' + entries.length + '</div></div>' +
+        '<div class="stat-card"><div class="lbl">Tổng số lượng tồn</div><div class="val">' + fmt(totalQty) + '</div></div>' +
+        '<div class="stat-card"><div class="lbl">Giá trị tồn (giá nhập)</div><div class="val">' + fmt(totalVal) + ' ₫</div></div>' +
+        '<div class="stat-card"><div class="lbl">Sắp hết</div><div class="val ' + (low ? 'warn' : '') + '">' + low + '</div></div>' +
+        '<div class="stat-card"><div class="lbl">Hết hàng</div><div class="val ' + (out ? 'bad' : '') + '">' + out + '</div></div>';
+
+    // bảng tồn
+    const q = norm(stf.text);
+    let rows = entries.filter(e => {
+        const meta = MODEL_INDEX[e.key];
+        if (stf.brand !== '*' && meta.brand !== stf.brand) return false;
+        if (q && norm(meta.name + e.svc).indexOf(q) < 0) return false;
+        if (stf.onlyLow) { const s = stockStatus(e.st); if (s !== 'low' && s !== 'out') return false; }
+        return true;
+    });
+    const rank = { out: 0, low: 1, none: 2, ok: 3 };
+    rows.sort((a, b) => rank[stockStatus(a.st)] - rank[stockStatus(b.st)] || MODEL_INDEX[a.key].name.localeCompare(MODEL_INDEX[b.key].name));
+    const body = $('#stockBody');
+    if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="8" class="empty">Chưa có linh kiện nào trong kho. Dùng form phía trên hoặc nút + ở tab Báo giá để nhập hàng.</td></tr>';
+    } else {
+        body.innerHTML = rows.slice(0, 500).map(e => {
+            const meta = MODEL_INDEX[e.key];
+            const it = getItem(e.key, e.svc);
+            const s = stockStatus(e.st);
+            const badge = s === 'out' ? '<span class="stock-badge out">Hết</span>' : s === 'low' ? '<span class="stock-badge low">Sắp hết</span>' : '';
+            return '<tr data-key="' + esc(e.key) + '" data-svc="' + esc(e.svc) + '">' +
+                '<td>' + esc(meta.name) + '</td><td>' + esc(e.svc) + '</td>' +
+                '<td><div class="stock-cell"><button data-act="dec">−</button><input type="text" class="input-price sm" data-f="qty" value="' + e.st.qty + '"><button data-act="inc">+</button> ' + badge + '</div></td>' +
+                '<td><input type="text" class="input-price sm" data-f="min" value="' + e.st.min + '"></td>' +
+                '<td><input type="text" class="input-price txt" style="width:90px" data-f="loc" value="' + esc(e.st.loc) + '" placeholder="Ngăn / hộc"></td>' +
+                '<td>' + fmt(it.cost) + '</td><td>' + fmt(e.st.qty * it.cost) + '</td>' +
+                '<td><button class="btn btn-ghost btn-sm" data-act="del" title="Bỏ khỏi danh sách theo dõi"><i class="fa-solid fa-xmark"></i></button></td></tr>';
+        }).join('');
+    }
+
+    // lịch sử
+    const lb = $('#logBody');
+    if (!state.log.length) lb.innerHTML = '<tr><td colspan="6" class="empty">Chưa có giao dịch.</td></tr>';
+    else lb.innerHTML = state.log.slice(0, 30).map(l => {
+        const meta = MODEL_INDEX[l.key];
+        return '<tr><td>' + fmtTime(l.t) + '</td><td>' + esc(meta ? meta.name : l.key) + '</td><td>' + esc(l.svc) + '</td><td>' + esc(l.type) + '</td><td>' + l.qty + '</td><td>' + esc(l.note) + '</td></tr>';
+    }).join('');
+    updateLowBadge();
+}
+function onStockSubmit() {
+    const key = $('#stModel').value;
+    const svc = $('#stService').value;
+    const qty = parseInt($('#stQty').value, 10) || 0;
+    const type = (document.querySelector('input[name="stType"]:checked') || {}).value || 'in';
+    if (!key || qty <= 0) { toast('Chọn model và nhập số lượng lớn hơn 0', true); return; }
+    const costTxt = $('#stCost').value.trim();
+    const ok = adjustStock(key, svc, type === 'in' ? qty : -qty, type === 'in' ? 'Nhập' : 'Xuất', $('#stNote').value.trim());
+    if (!ok) return;
+    if (type === 'in' && costTxt) setItem(key, svc, { cost: parseNum(costTxt) });
+    $('#stNote').value = ''; $('#stCost').value = '';
+    toast((type === 'in' ? 'Đã nhập ' : 'Đã xuất ') + qty + ' × ' + svc);
+    renderStock();
+}
+function onStockBodyChange(e) {
+    const el = e.target;
+    if (!el.dataset.f) return;
+    const tr = el.closest('tr');
+    const key = tr.dataset.key, svc = tr.dataset.svc;
+    if (el.dataset.f === 'qty') setStockQty(key, svc, parseNum(el.value));
+    else if (el.dataset.f === 'min') { ensureStock(key, svc).min = parseNum(el.value); markDirty(); }
+    else if (el.dataset.f === 'loc') { ensureStock(key, svc).loc = el.value.trim(); markDirty(); }
+    renderStock();
+}
+function onStockBodyClick(e) {
+    const btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    const tr = btn.closest('tr');
+    const key = tr.dataset.key, svc = tr.dataset.svc;
+    if (btn.dataset.act === 'inc') adjustStock(key, svc, 1, 'Nhập', 'Nhập nhanh');
+    else if (btn.dataset.act === 'dec') adjustStock(key, svc, -1, 'Xuất', 'Xuất nhanh');
+    else if (btn.dataset.act === 'del') {
+        const s = getStock(key, svc);
+        confirmDialog('Bỏ "' + MODEL_INDEX[key].name + ' – ' + svc + '" khỏi kho? Số lượng tồn (' + s.qty + ') sẽ về 0.', () => {
+            delete state.inventory[key][svc];
+            markDirty();
+            renderStock();
+        });
+        return;
+    }
+    renderStock();
+}
+function stockCsv() {
+    const rows = [['Hãng', 'Model', 'Hạng mục', 'Tồn', 'Mức tối thiểu', 'Vị trí', 'Giá nhập', 'Giá trị tồn'].map(csvCell).join(',')];
+    trackedEntries().forEach(e => {
+        const meta = MODEL_INDEX[e.key];
+        const it = getItem(e.key, e.svc);
+        rows.push([meta.brand, meta.name, e.svc, e.st.qty, e.st.min, e.st.loc, it.cost, e.st.qty * it.cost].map(csvCell).join(','));
+    });
+    return '﻿' + rows.join('\r\n');
+}
+
+/* ================= TAB CÔNG CỤ ================= */
+function bulkKeys() {
+    const scope = $('#blScope').value;
+    if (scope === 'model') return [ui.key];
+    if (scope === 'brand') return modelsOf(ui.brand).map(m => keyOf(ui.brand, m.name));
+    return allKeys();
+}
+function renderTools() {
+    const bs = $('#blService');
+    if (!bs.options.length) {
+        const all = document.createElement('option'); all.value = '*'; all.textContent = 'Tất cả hạng mục'; bs.appendChild(all);
+        SERVICES.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; bs.appendChild(o); });
+    }
+    const at = $('#amTier');
+    if (!at.options.length) {
+        [1, 2, 3, 4, 5, 6].forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t + ' – ' + TIER_NAMES[t]; at.appendChild(o); });
+        at.value = 3;
+    }
+    $('#amBrandList').innerHTML = brandList().map(b => '<option value="' + esc(b) + '">').join('');
+    const meta = MODEL_INDEX[ui.key];
+    $('#blScopeInfo').textContent = 'Model đang chọn: ' + (meta ? meta.name : '—') + ' · Hãng đang chọn: ' + ui.brand;
+    $('#shName').value = state.settings.shop;
+    $('#shPhone').value = state.settings.phone;
+    $('#shAddr').value = state.settings.addr;
+    $('#shTerms').value = state.settings.terms;
+    $('#storageInfo').textContent = fbDb ? 'Đang lưu trên thiết bị và đồng bộ Firestore cho các thiết bị cùng cửa hàng.' : (storageOK ? 'Dữ liệu đang lưu trong trình duyệt này. Kết nối Firebase ở phần trên để dùng chung nhiều thiết bị.' : '⚠ Trình duyệt đang chặn lưu trữ — hãy xuất sao lưu.');
+    const savedCfg = localStorage.getItem(FB_CONFIG_KEY);
+    if (savedCfg && !$('#fbConfigInput').value) $('#fbConfigInput').value = savedCfg;
+    const cl = $('#customList');
+    const rows = [];
+    Object.keys(state.customModels).forEach(b => {
+        state.customModels[b].forEach(m => rows.push({ brand: b, name: m.name, tier: m.tier }));
+    });
+    cl.innerHTML = rows.length ? rows.map(r =>
+        '<div class="row-item" data-brand="' + esc(r.brand) + '" data-name="' + esc(r.name) + '"><span>' + esc(r.brand) + ' – <b>' + esc(r.name) + '</b> <span class="muted">(' + esc(TIER_NAMES[r.tier]) + ')</span></span>' +
+        '<button class="btn btn-ghost btn-sm" data-del="1"><i class="fa-solid fa-trash"></i></button></div>').join('')
+        : '<div class="muted">Chưa có model tự thêm.</div>';
+}
+function applyBulk() {
+    const mode = $('#blMode').value;
+    const raw = $('#blValue').value.replace(',', '.').trim();
+    const val = parseFloat(raw);
+    if (isNaN(val)) { toast('Nhập giá trị % hợp lệ', true); return; }
+    if (mode === 'margin' && (val < 0 || val >= 100)) { toast('Lợi nhuận mục tiêu phải từ 0 đến dưới 100%', true); return; }
+    const svcSel = $('#blService').value;
+    const svcs = svcSel === '*' ? SERVICES : [svcSel];
+    const keys = bulkKeys();
+    const targets = [];
+    keys.forEach(k => svcs.forEach(s => { const it = getItem(k, s); if (it.cost || it.sell) targets.push([k, s]); }));
+    if (!targets.length) { toast('Không có mục nào để điều chỉnh', true); return; }
+    confirmDialog('Áp dụng cho ' + targets.length + ' mục giá (' + keys.length + ' model). Có thể đặt lại sau bằng nút "Đặt lại giá mẫu". Tiếp tục?', () => {
+        targets.forEach(t => {
+            const it = getItem(t[0], t[1]);
+            let cost = it.cost, sell = it.sell;
+            if (mode === 'sellPct') sell = roundTo(sell * (1 + val / 100), 1000);
+            else if (mode === 'costPct') cost = roundTo(cost * (1 + val / 100), 1000);
+            else if (mode === 'margin') { if (cost > 0) sell = roundTo(cost / (1 - val / 100), 1000); }
+            if (!state.overrides[t[0]]) state.overrides[t[0]] = {};
+            state.overrides[t[0]][t[1]] = Object.assign({}, it, { cost: Math.max(0, cost), sell: Math.max(0, sell) });
+        });
+        markDirty();
+        toast('Đã điều chỉnh ' + targets.length + ' mục giá');
+    });
+}
+function addModel() {
+    const brand = $('#amBrand').value.trim();
+    const name = $('#amName').value.trim();
+    const tier = parseInt($('#amTier').value, 10) || 3;
+    if (!brand || !name) { toast('Nhập đủ hãng và tên model', true); return; }
+    if (MODEL_INDEX[keyOf(brand, name)]) { toast('Model này đã có trong danh sách', true); return; }
+    if (!state.customModels[brand]) state.customModels[brand] = [];
+    state.customModels[brand].push({ name: name, tier: tier });
+    rebuildIndex();
+    markDirty();
+    $('#amName').value = '';
+    toast('Đã thêm ' + name);
+    renderTools();
+}
+function importFile(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+        try {
+            const o = JSON.parse(reader.result);
+            const s = o.state || o;
+            if (typeof s !== 'object' || !s.overrides) throw new Error('bad');
+            confirmDialog('Thay toàn bộ dữ liệu hiện tại bằng file sao lưu này?', () => {
+                state = Object.assign(defaultState(), s);
+                state.settings = Object.assign(defaultState().settings, s.settings || {});
+                rebuildIndex();
+                persist(false);
+                afterDataReplace();
+                toast('Đã khôi phục dữ liệu');
+            });
+        } catch (e) { toast('File không hợp lệ', true); }
+    };
+    reader.readAsText(file);
+}
+function afterDataReplace() {
+    $('#shopTitle').textContent = state.settings.shop || 'ĐỨC MẠNH MOBILE';
+    if (!MODEL_INDEX[ui.key]) {
+        ui.brand = 'Apple';
+        ui.key = keyOf('Apple', 'iPhone 15 Pro Max');
+    }
+    updateLowBadge();
+    showTab(ui.tab);
+}
+
+/* ================= DIALOG ================= */
+let dlgCb = null;
+function confirmDialog(msg, cb) {
+    $('#dlgBody').textContent = msg;
+    dlgCb = cb;
+    $('#dlg').classList.add('open');
+}
+function closeDlg() { $('#dlg').classList.remove('open'); dlgCb = null; }
+
+/* ================= TÌM MODEL THÔNG MINH ================= */
+function qAlias(q) {
+    let s = norm(q);
+    s = s.replace(/^(ss|samsung)/, '');
+    s = s.replace(/^(i|ip|iph)(?=\d|x|se|air)/, 'iphone');
+    s = s.replace(/^rn(?=\d)/, 'redminote');
+    s = s.replace(/xsm$/, 'xsmax');
+    s = s.replace(/(\d)pm$/, '$1promax').replace(/(\d)p$/, '$1pro').replace(/(\d)u$/, '$1ultra').replace(/(\d)pl$/, '$1plus');
+    return s.replace(/galaxy/g, '');
+}
+function modelHay(name) { return norm(name).replace(/galaxy/g, ''); }
+function matchModels(q, limit) {
+    const raw = norm(q);
+    if (!raw) return [];
+    const samsungOnly = /^(ss|samsung)/.test(raw);
+    const s = qAlias(q);
+    const out = [];
+    allKeys().forEach(k => {
+        const m = MODEL_INDEX[k];
+        if (samsungOnly && m.brand !== 'Samsung') return;
+        const h = modelHay(m.name);
+        let score = -1;
+        if (!s) score = 0;
+        else {
+            const i = h.indexOf(s);
+            if (i >= 0) score = 1000 - i * 10 - (h.length - s.length);
+            else {
+                const h2 = h.replace(/\+/g, 'plus');
+                const j = h2.indexOf(s);
+                if (j >= 0) score = 900 - j * 10 - (h2.length - s.length);
+            }
+        }
+        if (score >= 0) out.push({ k: k, score: score });
+    });
+    if (!out.length && s.length >= 3) {
+        allKeys().forEach(k => {
+            const h = modelHay(MODEL_INDEX[k].name);
+            let p = 0;
+            for (let i = 0; i < s.length; i++) {
+                p = h.indexOf(s[i], p);
+                if (p < 0) return;
+                p++;
+            }
+            out.push({ k: k, score: 100 - h.length });
+        });
+    }
+    out.sort((a, b) => b.score - a.score);
+    return out.slice(0, limit || 300).map(o => o.k);
+}
+
+/* ================= CRM: KHÁCH HÀNG, PHIẾU, TỔNG QUAN ================= */
+const STATUS = {
+    received: { label: 'Tiếp nhận', cls: 'st-received' },
+    repairing: { label: 'Đang sửa', cls: 'st-repairing' },
+    ready: { label: 'Đã xong – chờ lấy', cls: 'st-ready' },
+    delivered: { label: 'Đã giao', cls: 'st-delivered' },
+    cancelled: { label: 'Huỷ', cls: 'st-cancelled' }
+};
+const DAY = 86400000;
+const isDone = o => o.status === 'ready' || o.status === 'delivered';
+const fmtDate = t => { const d = new Date(t); return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+function normPhone(p) {
+    let d = String(p || '').replace(/\D/g, '');
+    if (d.indexOf('84') === 0 && d.length >= 11) d = '0' + d.slice(2);
+    return d;
+}
+function findCustByPhone(p) {
+    const n = normPhone(p);
+    if (n.length < 8) return null;
+    return Object.keys(state.customers).map(k => state.customers[k]).find(c => normPhone(c.phone) === n) || null;
+}
+function luhnOK(s) {
+    let sum = 0, alt = false;
+    for (let i = s.length - 1; i >= 0; i--) {
+        let n = parseInt(s[i], 10);
+        if (alt) { n *= 2; if (n > 9) n -= 9; }
+        sum += n; alt = !alt;
+    }
+    return sum % 10 === 0;
+}
+function warrantyDays(t) {
+    t = String(t || '').toLowerCase();
+    let m;
+    if ((m = t.match(/(\d+)\s*năm/))) return parseInt(m[1], 10) * 365;
+    if ((m = t.match(/(\d+)\s*(tháng|th\b)/))) return parseInt(m[1], 10) * 30;
+    if ((m = t.match(/(\d+)\s*tuần/))) return parseInt(m[1], 10) * 7;
+    if ((m = t.match(/(\d+)\s*ngày/))) return parseInt(m[1], 10);
+    return 0;
+}
+function orderCalc(o) {
+    const sub = o.lines.reduce((a, l) => a + (+l.sell || 0), 0);
+    const cost = o.lines.reduce((a, l) => a + (+l.cost || 0), 0);
+    const disc = Math.min(+o.discount || 0, sub);
+    const total = sub - disc;
+    const dep = +o.deposit || 0;
+    return { sub: sub, cost: cost, disc: disc, total: total, dep: dep, remain: Math.max(0, total - dep), profit: total - cost };
+}
+function ordersOf(custId) { return state.orders.filter(o => o.custId === custId); }
+function orderWarranties(o) {
+    if (!isDone(o) || !o.doneAt) return [];
+    const out = [];
+    o.lines.forEach(l => {
+        const d = warrantyDays(l.warranty);
+        if (d > 0) out.push({ label: l.label, svc: l.svc, until: o.doneAt + d * DAY, order: o });
+    });
+    return out;
+}
+function activeWarranties(custId) {
+    const now = Date.now(), out = [];
+    ordersOf(custId).forEach(o => orderWarranties(o).forEach(w => { if (w.until >= now) out.push(w); }));
+    return out;
+}
+function custStats(c) {
+    const os = ordersOf(c.id);
+    const done = os.filter(isDone);
+    return {
+        n: os.length, doneN: done.length,
+        spent: done.reduce((a, o) => a + orderCalc(o).total, 0),
+        last: os.reduce((a, o) => Math.max(a, o.created), 0),
+        war: activeWarranties(c.id).length
+    };
+}
+function orderModelName(o) { const m = MODEL_INDEX[o.key]; return m ? m.name : (o.modelName || '—'); }
+function openZaloText(text) { $('#zaloText').value = text; $('#zaloModal').classList.add('open'); }
+
+/* ----- Trừ kho theo phiếu ----- */
+function deductOrderStock(o) {
+    o.deducted = [];
+    const miss = [];
+    o.lines.forEach(l => {
+        if (!l.svc) return;
+        const st = getStock(o.key, l.svc);
+        if (st.qty >= 1) { adjustStock(o.key, l.svc, -1, 'Xuất', 'Phiếu ' + o.code); o.deducted.push(l.svc); }
+        else if (st.min > 0) miss.push(l.svc);
+    });
+    let t = '';
+    if (o.deducted.length) t = 'đã trừ kho ' + o.deducted.length + ' linh kiện';
+    if (miss.length) t += (t ? '; ' : '') + 'hết hàng: ' + miss.join(', ');
+    return t;
+}
+function restoreOrderStock(o) {
+    (o.deducted || []).forEach(svc => adjustStock(o.key, svc, 1, 'Nhập', 'Hoàn kho phiếu ' + o.code));
+    o.deducted = [];
+}
+function changeStatus(o, st) {
+    const was = isDone(o);
+    o.status = st;
+    const now = isDone(o);
+    let msg = '';
+    if (!was && now) { o.doneAt = o.doneAt || Date.now(); msg = deductOrderStock(o); }
+    if (was && !now) { restoreOrderStock(o); o.doneAt = null; }
+    if (st === 'delivered') o.deliveredAt = Date.now();
+    markDirty();
+    return msg;
+}
+
+/* ----- Tin nhắn / in phiếu ----- */
+function receiptText(o) {
+    const sh = state.settings, c = orderCalc(o);
+    let t = '🧾 *PHIẾU SỬA CHỮA ' + o.code + '* - ' + (sh.shop || '') + '\n';
+    t += '👤 Khách: ' + o.cname + (o.phone ? ' - ' + o.phone : '') + '\n';
+    t += '📱 Máy: ' + orderModelName(o) + (o.imei ? ' (IMEI/SN: ' + o.imei + ')' : '') + '\n';
+    if (o.issue) t += '📝 Tình trạng: ' + o.issue + '\n';
+    t += '🔧 Dịch vụ:\n';
+    o.lines.forEach(l => { t += ' - ' + l.label + ': ' + fmt(l.sell) + ' (BH: ' + (l.warranty || '—') + ')\n'; });
+    t += '-----------------------------------\n';
+    if (c.disc) t += 'Giảm giá: -' + fmt(c.disc) + '\n';
+    t += '💰 Tổng: *' + fmt(c.total) + ' VNĐ*';
+    if (c.dep) t += ' | Đã cọc: ' + fmt(c.dep) + ' | Còn lại: *' + fmt(c.remain) + '*';
+    t += '\n📅 Nhận máy: ' + fmtDate(o.created) + '\n';
+    if (sh.phone) t += '📞 ' + sh.phone + '\n';
+    if (sh.addr) t += '📍 ' + sh.addr;
+    return t.trim();
+}
+function readyText(o) {
+    const sh = state.settings, c = orderCalc(o);
+    let t = 'Chào anh/chị ' + o.cname + ', ' + (sh.shop || 'cửa hàng') + ' xin báo: máy ' + orderModelName(o) + ' của anh/chị đã sửa xong ✅.\n';
+    t += 'Số tiền cần thanh toán: ' + fmt(c.remain) + ' VNĐ.\n';
+    t += 'Mời anh/chị đến lấy máy' + (sh.addr ? ' tại ' + sh.addr : '') + '. ';
+    const w = orderWarranties(o);
+    if (w.length) t += 'Bảo hành: ' + w.map(x => x.label + ' đến ' + fmtDate(x.until)).join('; ') + '. ';
+    t += 'Cảm ơn anh/chị đã tin tưởng!';
+    return t;
+}
+function printOrder(o) {
+    const sh = state.settings, c = orderCalc(o);
+    const rows = o.lines.map(l => '<tr><td>' + esc(l.label) + '</td><td style="text-align:right">' + fmt(l.sell) + '</td><td>' + esc(l.warranty || '—') + '</td></tr>').join('');
+    $('#printArea').innerHTML =
+        '<h2 style="text-align:center">' + esc(sh.shop || 'CỬA HÀNG') + '</h2>' +
+        '<p style="text-align:center">' + esc(sh.addr || '') + (sh.phone ? ' · ĐT: ' + esc(sh.phone) : '') + '</p>' +
+        '<h2 style="text-align:center">PHIẾU SỬA CHỮA ' + esc(o.code) + '</h2>' +
+        '<p>Ngày nhận: ' + fmtDate(o.created) + '<br>Khách hàng: <b>' + esc(o.cname) + '</b>' + (o.phone ? ' - ' + esc(o.phone) : '') +
+        '<br>Máy: <b>' + esc(orderModelName(o)) + '</b>' + (o.imei ? ' · IMEI/SN: ' + esc(o.imei) : '') +
+        (o.issue ? '<br>Tình trạng: ' + esc(o.issue) : '') + '</p>' +
+        '<table><thead><tr><th>Hạng mục</th><th>Thành tiền (VNĐ)</th><th>Bảo hành</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+        '<p style="text-align:right">' + (c.disc ? 'Giảm giá: -' + fmt(c.disc) + '<br>' : '') + 'Tổng cộng: <b>' + fmt(c.total) + ' VNĐ</b>' +
+        (c.dep ? '<br>Đã cọc: ' + fmt(c.dep) + '<br>Còn lại: <b>' + fmt(c.remain) + ' VNĐ</b>' : '') + '</p>' +
+        '<p style="font-size:12px">' + esc(sh.terms || '') + '</p>' +
+        '<table style="border:none"><tr><td style="border:none;text-align:center">Khách hàng ký<br><br><br></td><td style="border:none;text-align:center">Nhân viên ký<br><br><br></td></tr></table>';
+    window.print();
+}
+
+/* ----- Tab phiếu sửa chữa ----- */
+const ofl = { text: '', status: '*' };
+function renderOrders() {
+    const sel = $('#ofStatus');
+    if (!sel.options.length) {
+        const a = document.createElement('option'); a.value = '*'; a.textContent = 'Tất cả trạng thái'; sel.appendChild(a);
+        Object.keys(STATUS).forEach(k => { const o = document.createElement('option'); o.value = k; o.textContent = STATUS[k].label; sel.appendChild(o); });
+    }
+    const q = norm(ofl.text);
+    const list = state.orders.filter(o => {
+        if (ofl.status !== '*' && o.status !== ofl.status) return false;
+        if (q) {
+            const hay = norm([o.code, o.cname, o.phone, orderModelName(o), o.imei, o.lines.map(l => l.label).join(' ')].join(' '));
+            if (hay.indexOf(q) < 0) return false;
+        }
+        return true;
+    }).sort((a, b) => b.created - a.created);
+    const open = state.orders.filter(o => o.status === 'received' || o.status === 'repairing').length;
+    $('#orderInfo').textContent = state.orders.length + ' phiếu · ' + open + ' đang xử lý · hiển thị ' + list.length;
+    const body = $('#orderBody');
+    if (!list.length) {
+        body.innerHTML = '<tr><td colspan="9" class="empty">Chưa có phiếu nào. Bấm "Tạo phiếu mới" để tiếp nhận máy.</td></tr>';
+        return;
+    }
+    body.innerHTML = list.slice(0, 300).map(o => {
+        const c = orderCalc(o);
+        const opts = Object.keys(STATUS).map(k => '<option value="' + k + '"' + (o.status === k ? ' selected' : '') + '>' + STATUS[k].label + '</option>').join('');
+        return '<tr data-id="' + esc(o.id) + '">' +
+            '<td><b>' + esc(o.code) + '</b></td><td>' + fmtTime(o.created) + '</td>' +
+            '<td>' + esc(o.cname) + '<br><span class="muted">' + esc(o.phone || '') + '</span></td>' +
+            '<td>' + esc(orderModelName(o)) + (o.imei ? '<br><span class="muted">' + esc(o.imei) + '</span>' : '') + '</td>' +
+            '<td style="max-width:230px">' + esc(o.lines.map(l => l.label).join(', ')) + '</td>' +
+            '<td>' + fmt(c.total) + '</td><td>' + (o.status === 'delivered' || o.status === 'cancelled' ? '—' : fmt(c.remain)) + '</td>' +
+            '<td><select class="input-price txt ' + STATUS[o.status].cls + '" style="width:150px" data-act="status">' + opts + '</select></td>' +
+            '<td style="white-space:nowrap"><button class="iconbtn" data-act="edit" title="Sửa phiếu"><i class="fa-solid fa-pen"></i></button> ' +
+            '<button class="iconbtn" data-act="msg" title="Soạn tin Zalo"><i class="fa-solid fa-comment-dots"></i></button> ' +
+            '<button class="iconbtn" data-act="print" title="In phiếu"><i class="fa-solid fa-print"></i></button> ' +
+            '<button class="iconbtn" data-act="del" title="Xoá phiếu"><i class="fa-solid fa-trash"></i></button></td></tr>';
+    }).join('');
+}
+function onOrdersBody(e) {
+    const tr = e.target.closest('tr');
+    if (!tr) return;
+    const o = state.orders.find(x => x.id === tr.dataset.id);
+    if (!o) return;
+    if (e.type === 'change' && e.target.dataset.act === 'status') {
+        const msg = changeStatus(o, e.target.value);
+        toast('Phiếu ' + o.code + ' → ' + STATUS[o.status].label + (msg ? ' · ' + msg : ''));
+        renderOrders(); updateLowBadge();
+        return;
+    }
+    const b = e.target.closest('button[data-act]');
+    if (e.type !== 'click' || !b) return;
+    if (b.dataset.act === 'edit') openOrder(o.id);
+    else if (b.dataset.act === 'msg') openZaloText(o.status === 'ready' ? readyText(o) : receiptText(o));
+    else if (b.dataset.act === 'print') printOrder(o);
+    else if (b.dataset.act === 'del') {
+        confirmDialog('Xoá phiếu ' + o.code + '? Nếu đã trừ kho, hàng sẽ được hoàn lại.', () => {
+            if (isDone(o)) restoreOrderStock(o);
+            state.orders = state.orders.filter(x => x.id !== o.id);
+            markDirty(); renderOrders(); updateLowBadge();
+            toast('Đã xoá phiếu');
+        });
+    }
+}
+
+/* ----- Form phiếu (modal) ----- */
+let od = null;
+function odEnsureSel(refreshOff) {
+    SERVICES.forEach(svc => {
+        const it = getItem(od.key, svc);
+        const cur = od.sel[svc];
+        if (!cur) od.sel[svc] = { on: false, sell: it.sell, cost: it.cost, warranty: it.warranty };
+        else if (refreshOff && !cur.on) { cur.sell = it.sell; cur.cost = it.cost; cur.warranty = it.warranty; }
+    });
+}
+function openOrder(id, preset) {
+    preset = preset || {};
+    const ex = id ? state.orders.find(o => o.id === id) : null;
+    if (ex) {
+        od = { id: ex.id, key: ex.key, custId: ex.custId, phone: ex.phone || '', cname: ex.cname || '', imei: ex.imei || '', issue: ex.issue || '',
+            discount: ex.discount || 0, deposit: ex.deposit || 0, status: ex.status, sel: {}, custom: [] };
+        ex.lines.forEach(l => {
+            if (l.custom) od.custom.push({ name: l.label, sell: l.sell, cost: l.cost, warranty: l.warranty });
+            else od.sel[l.svc] = { on: true, sell: l.sell, cost: l.cost, warranty: l.warranty };
+        });
+    } else {
+        od = { id: null, key: preset.key || ui.key, custId: null, phone: '', cname: '', imei: '', issue: '', discount: 0, deposit: 0, status: 'received', sel: {}, custom: [] };
+        if (preset.custId && state.customers[preset.custId]) {
+            const c = state.customers[preset.custId];
+            od.custId = c.id; od.phone = c.phone; od.cname = c.name;
+        }
+    }
+    if (!MODEL_INDEX[od.key]) od.key = keyOf('Apple', 'iPhone 15 Pro Max');
+    odEnsureSel(false);
+    $('#odTitle').textContent = ex ? 'Sửa phiếu ' + ex.code : 'Tạo phiếu sửa chữa mới';
+    renderOrderForm();
+    $('#orderModal').classList.add('open');
+    odLookup();
+    odImeiCheck();
+    odRecompute();
+}
+function odSync() {
+    if (!$('#odPhone')) return;
+    od.phone = $('#odPhone').value;
+    od.cname = $('#odName').value;
+    od.imei = $('#odImei').value;
+    od.issue = $('#odIssue').value;
+    od.discount = parseNum($('#odDisc').value);
+    od.deposit = parseNum($('#odDep').value);
+    od.status = $('#odStatus').value;
+}
+function renderOrderForm() {
+    let rows = '';
+    SERVICES.forEach(svc => {
+        const s = od.sel[svc];
+        const st = getStock(od.key, svc);
+        const badge = st.qty > 0 ? '<span class="stock-badge" style="background:rgba(16,185,129,0.2);color:#34d399">Có sẵn ' + st.qty + '</span>'
+            : (st.min > 0 ? '<span class="stock-badge out">Hết</span>' : '');
+        rows += '<tr data-svc="' + esc(svc) + '"><td><input type="checkbox" data-f="on"' + (s.on ? ' checked' : '') + '></td><td>' + esc(svc) + '</td>' +
+            '<td><input type="text" class="input-price" data-f="sell" value="' + fmt(s.sell) + '"></td>' +
+            '<td><input type="text" class="input-price" data-f="cost" value="' + fmt(s.cost) + '"></td>' +
+            '<td><input type="text" class="input-price txt" style="width:80px" data-f="warranty" value="' + esc(s.warranty) + '"></td><td>' + badge + '</td></tr>';
+    });
+    const crow = od.custom.map((c, i) =>
+        '<tr data-ci="' + i + '"><td colspan="2"><input type="text" class="input-price txt" style="width:100%" data-f="name" placeholder="Dịch vụ / phụ kiện khác" value="' + esc(c.name) + '"></td>' +
+        '<td><input type="text" class="input-price" data-f="sell" value="' + fmt(c.sell) + '"></td>' +
+        '<td><input type="text" class="input-price" data-f="cost" value="' + fmt(c.cost) + '"></td>' +
+        '<td><input type="text" class="input-price txt" style="width:80px" data-f="warranty" value="' + esc(c.warranty) + '"></td>' +
+        '<td><button class="iconbtn" data-act="delcustom" data-ci="' + i + '"><i class="fa-solid fa-xmark"></i></button></td></tr>').join('');
+    const statusOpts = Object.keys(STATUS).map(k => '<option value="' + k + '"' + (od.status === k ? ' selected' : '') + '>' + STATUS[k].label + '</option>').join('');
+    $('#odBody').innerHTML =
+        '<div class="form-grid">' +
+        '<div class="field"><label>Số điện thoại khách</label><input type="text" id="odPhone" value="' + esc(od.phone) + '" placeholder="VD: 0912345678"><div class="muted" id="odCustInfo" style="margin-top:4px"></div></div>' +
+        '<div class="field"><label>Tên khách</label><input type="text" id="odName" value="' + esc(od.cname) + '" placeholder="Tên khách hàng"></div>' +
+        '<div class="field"><label>Tìm nhanh máy (gõ: ip15pm, s24u, rn13...)</label><input type="text" id="odSearch" placeholder="Gõ tắt tên máy"><div class="suggest-list" id="odSuggest"></div></div>' +
+        '<div class="field"><label>Hãng</label><select id="odBrand"></select></div>' +
+        '<div class="field"><label>Model</label><select id="odModel"></select></div>' +
+        '<div class="field"><label>IMEI / Serial</label><input type="text" id="odImei" value="' + esc(od.imei) + '"><div class="muted" id="odImeiInfo" style="margin-top:4px"></div></div>' +
+        '</div>' +
+        '<div class="field" style="margin:10px 0"><label>Tình trạng máy / yêu cầu của khách</label><input type="text" id="odIssue" value="' + esc(od.issue) + '" placeholder="VD: Vỡ màn, sạc không vào pin..."></div>' +
+        '<div class="section-title" style="margin:12px 0 6px">Hạng mục sửa chữa <button class="btn btn-ghost btn-sm" data-act="reprice"><i class="fa-solid fa-rotate"></i> Lấy lại giá theo bảng</button></div>' +
+        '<div class="table-responsive"><table><thead><tr><th></th><th>Hạng mục</th><th>Giá bán</th><th>Giá nhập</th><th>Bảo hành</th><th>Kho</th></tr></thead><tbody>' + rows + crow + '</tbody></table></div>' +
+        '<button class="btn btn-ghost btn-sm" style="margin:8px 0" data-act="addcustom"><i class="fa-solid fa-plus"></i> Thêm dòng khác</button>' +
+        '<div class="form-grid" style="margin:10px 0">' +
+        '<div class="field"><label>Giảm giá (VNĐ)</label><input type="text" id="odDisc" value="' + fmt(od.discount) + '"></div>' +
+        '<div class="field"><label>Đặt cọc (VNĐ)</label><input type="text" id="odDep" value="' + fmt(od.deposit) + '"></div>' +
+        '<div class="field"><label>Trạng thái</label><select id="odStatus">' + statusOpts + '</select></div>' +
+        '</div>' +
+        '<div class="tot-grid" id="odTotals"></div>' +
+        '<div class="row-list" id="odHints" style="margin-top:10px"></div>' +
+        '<div class="dlg-actions"><button class="btn btn-ghost" data-act="odcancel">Đóng</button><button class="btn btn-success" data-act="odsave"><i class="fa-solid fa-floppy-disk"></i> Lưu phiếu</button></div>';
+    const meta = MODEL_INDEX[od.key];
+    fillBrandSelect($('#odBrand'), false, meta.brand);
+    fillModelSelect($('#odBrand'), $('#odModel'));
+    $('#odModel').value = od.key;
+}
+function odLines() {
+    const lines = [];
+    SERVICES.forEach(svc => {
+        const s = od.sel[svc];
+        if (s && s.on) lines.push({ svc: svc, label: svc, sell: s.sell, cost: s.cost, warranty: s.warranty, custom: false });
+    });
+    od.custom.forEach(c => {
+        if (c.name && c.name.trim()) lines.push({ svc: '', label: c.name.trim(), sell: c.sell, cost: c.cost, warranty: c.warranty, custom: true });
+    });
+    return lines;
+}
+function odLookup() {
+    const ph = $('#odPhone').value;
+    const c = findCustByPhone(ph);
+    const info = $('#odCustInfo');
+    od.custId = c ? c.id : null;
+    if (c) {
+        const s = custStats(c);
+        if (!$('#odName').value.trim()) $('#odName').value = c.name;
+        info.innerHTML = '<span style="color:#34d399">Khách cũ</span> · ' + esc(c.name) + ' · ' + s.n + ' phiếu · đã chi ' + fmt(s.spent) + ' ₫' + (c.vip ? ' · ⭐ VIP' : '') + (c.note ? '<br>Ghi chú: ' + esc(c.note) : '');
+    } else {
+        info.textContent = normPhone(ph).length >= 9 ? 'Khách mới — sẽ tự tạo hồ sơ khi lưu phiếu' : '';
+    }
+}
+function odImeiCheck() {
+    const v = $('#odImei').value.replace(/\s/g, '');
+    const el = $('#odImeiInfo');
+    if (/^\d{15}$/.test(v)) el.innerHTML = luhnOK(v) ? '<span style="color:#34d399">IMEI hợp lệ ✔</span>' : '<span style="color:#fbbf24">IMEI sai mã kiểm tra — kiểm tra lại số</span>';
+    else if (v.length >= 8 && /^\d+$/.test(v) && v.length < 15) el.innerHTML = '<span class="muted">IMEI đủ 15 số — đang nhập ' + v.length + '</span>';
+    else el.textContent = '';
+}
+function odSuggest() {
+    const q = $('#odSearch').value;
+    const box = $('#odSuggest');
+    if (!q.trim()) { box.innerHTML = ''; return; }
+    const keys = matchModels(q, 6);
+    box.innerHTML = keys.length ? keys.map(k => '<button class="btn btn-ghost btn-sm" data-act="pick" data-key="' + esc(k) + '">' + esc(MODEL_INDEX[k].name) + '</button>').join('') : '<span class="muted">Không tìm thấy</span>';
+}
+function odRecompute() {
+    if (!$('#odTotals')) return;
+    const lines = odLines();
+    const disc = parseNum($('#odDisc').value), dep = parseNum($('#odDep').value);
+    const c = orderCalc({ lines: lines, discount: disc, deposit: dep });
+    $('#odTotals').innerHTML =
+        '<div class="tot-row"><span>Tạm tính</span><b>' + fmt(c.sub) + '</b></div>' +
+        '<div class="tot-row"><span>Giảm giá</span><b>-' + fmt(c.disc) + '</b></div>' +
+        '<div class="tot-row big"><span>Tổng cộng</span><b>' + fmt(c.total) + '</b></div>' +
+        '<div class="tot-row"><span>Còn lại sau cọc</span><b>' + fmt(c.remain) + '</b></div>' +
+        '<div class="tot-row"><span>Lợi nhuận ước tính</span><b style="color:' + (c.profit < 0 ? '#f87171' : '#34d399') + '">' + fmt(c.profit) + '</b></div>';
+    const hints = [];
+    const cust = findCustByPhone($('#odPhone').value);
+    if (cust) {
+        const aw = activeWarranties(cust.id).filter(w => w.order.key === od.key && w.order.id !== od.id && w.svc && lines.some(l => l.svc === w.svc));
+        aw.forEach(w => hints.push({ cls: 'warn', t: '🛡 Khách còn bảo hành "' + esc(w.label) + '" cho máy này (đến ' + fmtDate(w.until) + ', phiếu ' + esc(w.order.code) + ') — cân nhắc miễn phí / giảm giá.' }));
+    }
+    lines.filter(l => l.sell < l.cost).forEach(l => hints.push({ cls: 'bad', t: '⚠ "' + esc(l.label) + '" đang bán thấp hơn giá nhập (lỗ ' + fmt(l.cost - l.sell) + ').' }));
+    lines.filter(l => l.sell >= l.cost && l.sell > 0 && (l.sell - l.cost) / l.sell < 0.15).forEach(l => hints.push({ cls: 'warn', t: 'Lợi nhuận mục "' + esc(l.label) + '" thấp (<15%).' }));
+    const noStock = lines.filter(l => l.svc && getStock(od.key, l.svc).qty < 1).map(l => l.label);
+    const inStock = lines.filter(l => l.svc && getStock(od.key, l.svc).qty >= 1).map(l => l.label);
+    if (inStock.length) hints.push({ cls: 'ok', t: '📦 Có sẵn trong kho (sẽ tự trừ khi hoàn thành): ' + esc(inStock.join(', ')) });
+    if (noStock.length) hints.push({ cls: '', t: '🛒 Chưa có sẵn trong kho: ' + esc(noStock.join(', ')) + ' — cần đặt linh kiện.' });
+    const loyal = cust ? custStats(cust).doneN >= 3 || cust.vip : false;
+    if (disc === 0 && c.sub > 0 && (loyal || lines.length >= 3 || c.sub >= 3000000)) {
+        const why = loyal ? 'khách quen/VIP' : (lines.length >= 3 ? 'làm từ 3 hạng mục' : 'đơn giá trị lớn');
+        hints.push({ cls: 'ok', t: '💡 Gợi ý giảm 5% (' + why + ') = ' + fmt(roundTo(c.sub * 0.05, 1000)) + ' ₫ <button class="btn btn-ghost btn-sm" data-act="disc5">Áp dụng</button>' });
+    }
+    $('#odHints').innerHTML = hints.map(h => '<div class="insight ' + h.cls + '"><span>' + h.t + '</span></div>').join('');
+}
+function onOdInput(e) {
+    const el = e.target;
+    if (el.id === 'odPhone') { odLookup(); odRecompute(); return; }
+    if (el.id === 'odSearch') { odSuggest(); return; }
+    if (el.id === 'odImei') { odImeiCheck(); return; }
+    if (el.id === 'odDisc' || el.id === 'odDep') { odRecompute(); return; }
+    const f = el.dataset.f;
+    if (!f || f === 'on') return;
+    const tr = el.closest('tr');
+    if (tr.dataset.svc) {
+        const s = od.sel[tr.dataset.svc];
+        if (f === 'sell' || f === 'cost') s[f] = parseNum(el.value); else s.warranty = el.value;
+    } else if (tr.dataset.ci !== undefined) {
+        const c = od.custom[parseInt(tr.dataset.ci, 10)];
+        if (f === 'sell' || f === 'cost') c[f] = parseNum(el.value); else c[f] = el.value;
+    }
+    odRecompute();
+}
+function onOdChange(e) {
+    const el = e.target;
+    if (el.id === 'odBrand') {
+        odSync();
+        const ms = modelsOf(el.value);
+        if (ms.length) { od.key = keyOf(el.value, ms[0].name); odEnsureSel(true); renderOrderForm(); odLookup(); odImeiCheck(); odRecompute(); }
+        return;
+    }
+    if (el.id === 'odModel') {
+        odSync();
+        od.key = el.value; odEnsureSel(true); renderOrderForm(); odLookup(); odImeiCheck(); odRecompute();
+        return;
+    }
+    if (el.id === 'odDisc' || el.id === 'odDep') { el.value = fmt(parseNum(el.value)); odRecompute(); return; }
+    const f = el.dataset.f;
+    if (!f) return;
+    const tr = el.closest('tr');
+    if (f === 'on') { od.sel[tr.dataset.svc].on = el.checked; odRecompute(); return; }
+    if (f === 'sell' || f === 'cost') el.value = fmt(parseNum(el.value));
+}
+function onOdClick(e) {
+    const b = e.target.closest('[data-act]');
+    if (!b) return;
+    const act = b.dataset.act;
+    if (act === 'odcancel') { $('#orderModal').classList.remove('open'); return; }
+    if (act === 'odsave') { saveOrder(); return; }
+    if (act === 'addcustom') { odSync(); od.custom.push({ name: '', sell: 0, cost: 0, warranty: '1 Tháng' }); renderOrderForm(); odLookup(); odImeiCheck(); odRecompute(); return; }
+    if (act === 'delcustom') { odSync(); od.custom.splice(parseInt(b.dataset.ci, 10), 1); renderOrderForm(); odLookup(); odImeiCheck(); odRecompute(); return; }
+    if (act === 'pick') { odSync(); od.key = b.dataset.key; odEnsureSel(true); renderOrderForm(); odLookup(); odImeiCheck(); odRecompute(); return; }
+    if (act === 'reprice') {
+        odSync();
+        SERVICES.forEach(svc => { const it = getItem(od.key, svc); od.sel[svc] = { on: od.sel[svc].on, sell: it.sell, cost: it.cost, warranty: it.warranty }; });
+        renderOrderForm(); odLookup(); odImeiCheck(); odRecompute();
+        toast('Đã lấy lại giá theo bảng giá');
+        return;
+    }
+    if (act === 'disc5') {
+        const c = orderCalc({ lines: odLines(), discount: 0, deposit: 0 });
+        $('#odDisc').value = fmt(roundTo(c.sub * 0.05, 1000));
+        odRecompute();
+    }
+}
+function saveOrder() {
+    odSync();
+    const lines = odLines();
+    if (!lines.length) { toast('Chọn ít nhất một hạng mục sửa chữa', true); return; }
+    const phone = od.phone.trim();
+    const nph = normPhone(phone);
+    let name = od.cname.trim();
+    let cust = findCustByPhone(phone);
+    if (!cust && nph.length >= 9) {
+        cust = { id: uid(), name: name || ('Khách ' + nph.slice(-4)), phone: nph, addr: '', note: '', vip: false, created: Date.now() };
+        state.customers[cust.id] = cust;
+    }
+    if (!name) name = cust ? cust.name : 'Khách lẻ';
+    const old = od.id ? state.orders.find(o => o.id === od.id) : null;
+    if (old && isDone(old)) restoreOrderStock(old);
+    const meta = MODEL_INDEX[od.key];
+    const o = old || { id: uid(), code: 'DM' + String(++state.seq).padStart(4, '0'), created: Date.now(), deducted: [], doneAt: null };
+    Object.assign(o, {
+        custId: cust ? cust.id : null, cname: name, phone: cust ? cust.phone : phone,
+        key: od.key, brand: meta.brand, modelName: meta.name,
+        imei: od.imei.trim(), issue: od.issue.trim(), lines: lines,
+        discount: od.discount, deposit: od.deposit, status: od.status
+    });
+    let msg = '';
+    if (isDone(o)) {
+        o.doneAt = (old && old.doneAt) || Date.now();
+        if (o.status === 'delivered') o.deliveredAt = (old && old.deliveredAt) || Date.now();
+        msg = deductOrderStock(o);
+    } else { o.doneAt = null; }
+    if (!old) state.orders.push(o);
+    markDirty();
+    $('#orderModal').classList.remove('open');
+    toast('Đã lưu phiếu ' + o.code + (msg ? ' · ' + msg : ''));
+    updateLowBadge();
+    showTab(ui.tab);
+}
+
+/* ----- Tab khách hàng ----- */
+const cf = { text: '', vip: false };
+function renderCustomers() {
+    const stats = {};
+    Object.keys(state.customers).forEach(id => { stats[id] = custStats(state.customers[id]); });
+    const q = norm(cf.text);
+    const list = Object.keys(state.customers).map(id => state.customers[id]).filter(c => {
+        if (cf.vip && !(c.vip || stats[c.id].doneN >= 3)) return false;
+        if (q && norm(c.name + c.phone).indexOf(q) < 0) return false;
+        return true;
+    }).sort((a, b) => (stats[b.id].last || b.created) - (stats[a.id].last || a.created));
+    const total = Object.keys(state.customers).length;
+    $('#custInfo').textContent = total + ' khách hàng · hiển thị ' + list.length + '. Hồ sơ khách tự tạo khi bạn lưu phiếu sửa có số điện thoại.';
+    const body = $('#custBody');
+    if (!list.length) { body.innerHTML = '<tr><td colspan="8" class="empty">Chưa có khách hàng.</td></tr>'; return; }
+    body.innerHTML = list.slice(0, 400).map(c => {
+        const s = stats[c.id];
+        const zl = normPhone(c.phone);
+        return '<tr data-id="' + esc(c.id) + '"><td><b>' + esc(c.name) + '</b>' + (c.vip ? '<span class="badge-vip">VIP</span>' : '') + (s.doneN >= 3 ? '<span class="badge-loyal">Khách quen</span>' : '') + '</td>' +
+            '<td>' + esc(c.phone) + '</td><td>' + s.n + '</td><td>' + fmt(s.spent) + '</td><td>' + (s.last ? fmtDate(s.last) : '—') + '</td>' +
+            '<td>' + (s.war ? '<span class="st st-ready">' + s.war + ' hạng mục</span>' : '—') + '</td>' +
+            '<td style="max-width:200px" class="muted">' + esc(c.note || '') + '</td>' +
+            '<td style="white-space:nowrap"><button class="iconbtn" data-act="open" title="Xem / sửa hồ sơ"><i class="fa-solid fa-id-card"></i></button> ' +
+            '<button class="iconbtn" data-act="neworder" title="Tạo phiếu"><i class="fa-solid fa-file-circle-plus"></i></button> ' +
+            (zl ? '<a class="iconbtn" href="tel:' + esc(zl) + '" title="Gọi"><i class="fa-solid fa-phone"></i></a> <a class="iconbtn" target="_blank" rel="noopener" href="https://zalo.me/' + esc(zl) + '" title="Mở Zalo"><i class="fa-solid fa-comment"></i></a>' : '') + '</td></tr>';
+    }).join('');
+}
+let cuCur = null;
+function openCustomer(id) {
+    cuCur = id ? Object.assign({}, state.customers[id]) : { id: null, name: '', phone: '', addr: '', note: '', vip: false };
+    $('#cuTitle').textContent = id ? 'Hồ sơ khách hàng' : 'Thêm khách hàng';
+    let hist = '';
+    if (id) {
+        const os = ordersOf(id).sort((a, b) => b.created - a.created);
+        const s = custStats(state.customers[id]);
+        hist = '<div class="section-title" style="margin:14px 0 6px">Lịch sử sửa chữa · ' + s.n + ' phiếu · đã chi ' + fmt(s.spent) + ' ₫</div><div class="row-list">' +
+            (os.length ? os.map(o => '<div class="row-item"><span><b>' + esc(o.code) + '</b> · ' + fmtDate(o.created) + ' · ' + esc(orderModelName(o)) + '<br><span class="muted">' + esc(o.lines.map(l => l.label).join(', ')) + '</span></span>' +
+                '<span><span class="st ' + STATUS[o.status].cls + '">' + STATUS[o.status].label + '</span> <b>' + fmt(orderCalc(o).total) + '</b> <button class="iconbtn" data-act="openorder" data-oid="' + esc(o.id) + '"><i class="fa-solid fa-pen"></i></button></span></div>').join('') : '<div class="muted">Chưa có phiếu.</div>') + '</div>';
+        const aw = activeWarranties(id);
+        if (aw.length) hist += '<div class="section-title" style="margin:14px 0 6px">Bảo hành còn hiệu lực</div><div class="row-list">' +
+            aw.map(w => '<div class="row-item"><span>' + esc(w.label) + ' · ' + esc(orderModelName(w.order)) + '</span><span class="muted">đến ' + fmtDate(w.until) + '</span></div>').join('') + '</div>';
+    }
+    $('#cuBody').innerHTML =
+        '<div class="form-grid">' +
+        '<div class="field"><label>Tên khách</label><input type="text" id="cuName" value="' + esc(cuCur.name) + '"></div>' +
+        '<div class="field"><label>Số điện thoại</label><input type="text" id="cuPhone" value="' + esc(cuCur.phone) + '"></div>' +
+        '<div class="field"><label>Địa chỉ</label><input type="text" id="cuAddr" value="' + esc(cuCur.addr || '') + '"></div>' +
+        '<div class="field"><label>Ghi chú</label><input type="text" id="cuNote" value="' + esc(cuCur.note || '') + '" placeholder="VD: hay hỏi bảo hành, thích hàng zin"></div>' +
+        '<div class="radio-row"><label><input type="checkbox" id="cuVip"' + (cuCur.vip ? ' checked' : '') + '> Khách VIP</label></div></div>' + hist +
+        '<div class="dlg-actions">' +
+        (id ? '<button class="btn btn-danger" data-act="cudel"><i class="fa-solid fa-trash"></i> Xoá khách</button><button class="btn btn-ghost" data-act="cuorder"><i class="fa-solid fa-file-circle-plus"></i> Tạo phiếu</button>' : '') +
+        '<button class="btn btn-ghost" data-act="cucancel">Đóng</button><button class="btn btn-success" data-act="cusave"><i class="fa-solid fa-floppy-disk"></i> Lưu</button></div>';
+    $('#custModal').classList.add('open');
+}
+function saveCustomer() {
+    const name = $('#cuName').value.trim();
+    const phone = normPhone($('#cuPhone').value);
+    if (!name && !phone) { toast('Nhập tên hoặc số điện thoại', true); return; }
+    const dup = phone ? findCustByPhone(phone) : null;
+    if (dup && dup.id !== cuCur.id) { toast('Số này đã thuộc khách "' + dup.name + '"', true); return; }
+    const c = cuCur.id ? state.customers[cuCur.id] : { id: uid(), created: Date.now() };
+    Object.assign(c, { name: name || ('Khách ' + phone.slice(-4)), phone: phone, addr: $('#cuAddr').value.trim(), note: $('#cuNote').value.trim(), vip: $('#cuVip').checked });
+    state.customers[c.id] = c;
+    // đồng bộ tên/SĐT trên các phiếu cũ
+    state.orders.forEach(o => { if (o.custId === c.id) { o.cname = c.name; o.phone = c.phone; } });
+    markDirty();
+    $('#custModal').classList.remove('open');
+    toast('Đã lưu khách hàng');
+    showTab(ui.tab);
+}
+function onCuClick(e) {
+    const b = e.target.closest('[data-act]');
+    if (!b) return;
+    const act = b.dataset.act;
+    if (act === 'cucancel') { $('#custModal').classList.remove('open'); }
+    else if (act === 'cusave') saveCustomer();
+    else if (act === 'cuorder') { $('#custModal').classList.remove('open'); openOrder(null, { custId: cuCur.id }); }
+    else if (act === 'openorder') { $('#custModal').classList.remove('open'); openOrder(b.dataset.oid); }
+    else if (act === 'cudel') {
+        if (ordersOf(cuCur.id).length) { toast('Khách còn phiếu sửa chữa — không thể xoá', true); return; }
+        confirmDialog('Xoá khách "' + cuCur.name + '"?', () => {
+            delete state.customers[cuCur.id];
+            markDirty();
+            $('#custModal').classList.remove('open');
+            showTab(ui.tab);
+        });
+    }
+}
+function customersCsv() {
+    const rows = [['Tên', 'SĐT', 'Địa chỉ', 'VIP', 'Số phiếu', 'Tổng chi tiêu', 'Ghi chú'].map(csvCell).join(',')];
+    Object.keys(state.customers).forEach(id => {
+        const c = state.customers[id], s = custStats(c);
+        rows.push([c.name, c.phone, c.addr || '', c.vip ? 'x' : '', s.n, s.spent, c.note || ''].map(csvCell).join(','));
+    });
+    return '﻿' + rows.join('\r\n');
+}
+
+/* ----- Tổng quan ----- */
+const dash = { range: 'month' };
+function rangeStart(r) {
+    const d = new Date(); d.setHours(0, 0, 0, 0);
+    if (r === 'today') return d.getTime();
+    if (r === '7d') { d.setDate(d.getDate() - 6); return d.getTime(); }
+    if (r === 'month') { d.setDate(1); return d.getTime(); }
+    return 0;
+}
+function topHTML(map, n) {
+    const arr = Object.keys(map).map(k => [k, map[k]]).sort((a, b) => b[1] - a[1]).slice(0, n);
+    return arr.length ? arr.map(a => '<div class="top-row"><span>' + esc(a[0]) + '</span><b>' + a[1] + '</b></div>').join('') : '<div class="muted">Chưa có dữ liệu.</div>';
+}
+function buildInsights() {
+    const out = [], now = Date.now();
+    state.orders.filter(o => o.status === 'ready' && now - (o.doneAt || o.created) > 3 * DAY).slice(0, 4).forEach(o =>
+        out.push({ cls: 'warn', t: '📦 Phiếu <b>' + esc(o.code) + '</b> (' + esc(o.cname) + ') đã xong ' + Math.floor((now - (o.doneAt || o.created)) / DAY) + ' ngày chưa lấy máy.', oid: o.id }));
+    state.orders.filter(o => (o.status === 'received' || o.status === 'repairing') && now - o.created > 3 * DAY).slice(0, 4).forEach(o =>
+        out.push({ cls: 'bad', t: '⏱ Phiếu <b>' + esc(o.code) + '</b> (' + esc(orderModelName(o)) + ') nhận đã ' + Math.floor((now - o.created) / DAY) + ' ngày vẫn chưa xong.' }));
+    const soon = [];
+    state.orders.forEach(o => orderWarranties(o).forEach(w => { if (w.until >= now && w.until - now <= 7 * DAY) soon.push(w); }));
+    if (soon.length) out.push({ cls: '', t: '🛡 ' + soon.length + ' hạng mục bảo hành sắp hết hạn trong 7 ngày (VD: ' + esc(soon[0].order.cname) + ' – ' + esc(soon[0].label) + ').' });
+    // gợi ý nhập hàng
+    const since = now - 30 * DAY, use = {};
+    state.orders.forEach(o => { if (isDone(o) && (o.doneAt || 0) >= since) o.lines.forEach(l => { if (l.svc) { const k = o.key + '||' + l.svc; use[k] = (use[k] || 0) + 1; } }); });
+    const keys = {};
+    trackedEntries().forEach(e => { keys[e.key + '||' + e.svc] = true; });
+    Object.keys(use).forEach(k => { keys[k] = true; });
+    const sug = [];
+    Object.keys(keys).forEach(k => {
+        const p = k.split('||');
+        if (!MODEL_INDEX[p[0]]) return;
+        const st = getStock(p[0], p[1]);
+        const u = use[k] || 0;
+        const target = Math.max(st.min * 2, u);
+        const need = target - st.qty;
+        if (need > 0 && (u >= 1 || st.min > 0)) sug.push({ name: MODEL_INDEX[p[0]].name + ' – ' + p[1], need: need, qty: st.qty, u: u });
+    });
+    sug.sort((a, b) => b.need - a.need).slice(0, 5).forEach(s =>
+        out.push({ cls: 'warn', t: '🛒 Nên nhập thêm <b>' + s.need + '</b> × ' + esc(s.name) + ' (tồn ' + s.qty + ', dùng ' + s.u + ' lần/30 ngày).', go: 'stock' }));
+    // lợi nhuận thấp
+    const low = [];
+    Object.keys(state.overrides).forEach(k => {
+        if (!MODEL_INDEX[k]) return;
+        Object.keys(state.overrides[k]).forEach(svc => {
+            const it = getItem(k, svc), m = marginOf(it);
+            if (m !== null && m < 20) low.push(MODEL_INDEX[k].name + ' – ' + svc + ' (' + m + '%)');
+        });
+    });
+    if (low.length) out.push({ cls: 'warn', t: '📉 ' + low.length + ' mục giá bạn đã sửa có lợi nhuận dưới 20%: ' + esc(low.slice(0, 3).join('; ')) + (low.length > 3 ? '...' : ''), go: 'matrix' });
+    const cold = Object.keys(state.customers).map(id => state.customers[id]).filter(c => {
+        const done = ordersOf(c.id).filter(isDone);
+        if (!done.length) return false;
+        const last = done.reduce((a, o) => Math.max(a, o.doneAt || 0), 0);
+        return now - last > 90 * DAY;
+    });
+    if (cold.length) out.push({ cls: '', t: '👋 ' + cold.length + ' khách chưa quay lại hơn 90 ngày (VD: ' + esc(cold.slice(0, 3).map(c => c.name).join(', ')) + ') — có thể nhắn thăm hỏi, ưu đãi.' });
+    if (!out.length) out.push({ cls: 'ok', t: '✅ Chưa có cảnh báo nào. Tạo phiếu sửa chữa và nhập kho để hệ thống bắt đầu gợi ý.' });
+    return out.slice(0, 14);
+}
+function renderDash() {
+    $('#dashRange').value = dash.range;
+    const from = rangeStart(dash.range);
+    const inR = t => t && t >= from;
+    const done = state.orders.filter(o => isDone(o) && inR(o.doneAt));
+    let rev = 0, profit = 0;
+    done.forEach(o => { const c = orderCalc(o); rev += c.total; profit += c.profit; });
+    const active = state.orders.filter(o => o.status === 'received' || o.status === 'repairing').length;
+    const ready = state.orders.filter(o => o.status === 'ready');
+    const toCollect = ready.reduce((a, o) => a + orderCalc(o).remain, 0);
+    const newCust = Object.keys(state.customers).filter(id => inR(state.customers[id].created)).length;
+    $('#dashCards').innerHTML =
+        '<div class="stat-card"><div class="lbl">Doanh thu</div><div class="val">' + fmt(rev) + ' ₫</div></div>' +
+        '<div class="stat-card"><div class="lbl">Lợi nhuận</div><div class="val" style="color:#34d399">' + fmt(profit) + ' ₫</div></div>' +
+        '<div class="stat-card"><div class="lbl">Phiếu hoàn thành</div><div class="val">' + done.length + '</div></div>' +
+        '<div class="stat-card"><div class="lbl">Đang sửa / tiếp nhận</div><div class="val ' + (active ? 'warn' : '') + '">' + active + '</div></div>' +
+        '<div class="stat-card"><div class="lbl">Chờ khách lấy</div><div class="val">' + ready.length + '</div></div>' +
+        '<div class="stat-card"><div class="lbl">Tiền chờ thu</div><div class="val">' + fmt(toCollect) + ' ₫</div></div>' +
+        '<div class="stat-card"><div class="lbl">Khách mới</div><div class="val">' + newCust + '</div></div>';
+    // biểu đồ 14 ngày
+    const days = [], map = {};
+    for (let i = 13; i >= 0; i--) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - i); days.push(d); map[d.getTime()] = 0; }
+    state.orders.forEach(o => {
+        if (!isDone(o) || !o.doneAt) return;
+        const d = new Date(o.doneAt); d.setHours(0, 0, 0, 0);
+        if (map[d.getTime()] !== undefined) map[d.getTime()] += orderCalc(o).total;
+    });
+    const max = Math.max.apply(null, days.map(d => map[d.getTime()]).concat([1]));
+    $('#dashBars').innerHTML = days.map(d => {
+        const v = map[d.getTime()];
+        return '<div class="bar-col" title="' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ': ' + fmt(v) + ' ₫"><div class="bar" style="height:' + Math.max(2, Math.round(v / max * 100)) + '%;' + (v ? '' : 'background:var(--bg-card)') + '"></div><div class="bar-lbl">' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '</div></div>';
+    }).join('');
+    // top
+    const svcMap = {}, modelMap = {};
+    done.forEach(o => {
+        o.lines.forEach(l => { svcMap[l.label] = (svcMap[l.label] || 0) + 1; });
+        const n = orderModelName(o); modelMap[n] = (modelMap[n] || 0) + 1;
+    });
+    $('#dashTopSvc').innerHTML = topHTML(svcMap, 6);
+    $('#dashTopModel').innerHTML = topHTML(modelMap, 6);
+    // gợi ý
+    $('#dashInsights').innerHTML = buildInsights().map(i =>
+        '<div class="insight ' + i.cls + '"><span>' + i.t + '</span>' +
+        (i.oid ? '<button class="btn btn-ghost btn-sm" data-zalo="' + esc(i.oid) + '">Soạn tin nhắc</button>' : '') +
+        (i.go ? '<button class="btn btn-ghost btn-sm" data-goto="' + i.go + '">Mở</button>' : '') + '</div>').join('');
+    renderLookup();
+}
+function renderLookup() {
+    const q = $('#dwQuery').value.trim();
+    const box = $('#dwResult');
+    if (!q) { box.innerHTML = '<div class="muted">Nhập SĐT, IMEI hoặc mã phiếu để kiểm tra bảo hành.</div>'; return; }
+    const ql = q.toLowerCase();
+    const digits = q.replace(/\D/g, '');
+    const now = Date.now();
+    const res = state.orders.filter(o =>
+        o.code.toLowerCase().indexOf(ql) >= 0 ||
+        (o.imei && o.imei.toLowerCase().indexOf(ql) >= 0) ||
+        (digits.length >= 4 && normPhone(o.phone).indexOf(normPhone(q)) >= 0)
+    ).sort((a, b) => b.created - a.created).slice(0, 8);
+    if (!res.length) { box.innerHTML = '<div class="muted">Không tìm thấy phiếu phù hợp.</div>'; return; }
+    box.innerHTML = res.map(o => {
+        let lines;
+        if (!isDone(o)) lines = '<div class="muted">Phiếu chưa hoàn thành — bảo hành tính từ lúc hoàn thành.</div>';
+        else lines = o.lines.map(l => {
+            const d = warrantyDays(l.warranty);
+            if (!d) return '<div class="muted">· ' + esc(l.label) + ': không bảo hành</div>';
+            const until = o.doneAt + d * DAY;
+            return until >= now ? '<div>· ' + esc(l.label) + ': <span style="color:#34d399">còn bảo hành đến ' + fmtDate(until) + ' (' + Math.ceil((until - now) / DAY) + ' ngày)</span></div>'
+                : '<div>· ' + esc(l.label) + ': <span style="color:#f87171">hết bảo hành từ ' + fmtDate(until) + '</span></div>';
+        }).join('');
+        return '<div class="insight" style="display:block;margin-bottom:6px"><b>' + esc(o.code) + '</b> · ' + esc(o.cname) + ' · ' + esc(orderModelName(o)) + ' · <span class="st ' + STATUS[o.status].cls + '">' + STATUS[o.status].label + '</span>' + lines + '</div>';
+    }).join('');
+}
+
+function initCRM() {
+    // phiếu
+    $('#btnOrderNew').addEventListener('click', () => openOrder(null));
+    $('#btnDashNew').addEventListener('click', () => openOrder(null));
+    $('#btnNewOrderQ').addEventListener('click', () => openOrder(null, { key: ui.key }));
+    $('#ofText').addEventListener('input', e => { ofl.text = e.target.value; renderOrders(); });
+    $('#ofStatus').addEventListener('change', e => { ofl.status = e.target.value; renderOrders(); });
+    $('#orderBody').addEventListener('click', onOrdersBody);
+    $('#orderBody').addEventListener('change', onOrdersBody);
+    const ob = $('#odBody');
+    ob.addEventListener('input', onOdInput);
+    ob.addEventListener('change', onOdChange);
+    ob.addEventListener('click', onOdClick);
+    $('#odClose').addEventListener('click', () => $('#orderModal').classList.remove('open'));
+    // khách
+    $('#btnCustNew').addEventListener('click', () => openCustomer(null));
+    $('#cfText').addEventListener('input', e => { cf.text = e.target.value; renderCustomers(); });
+    $('#cfVip').addEventListener('change', e => { cf.vip = e.target.checked; renderCustomers(); });
+    $('#btnCustCsv').addEventListener('click', () => download('khach-hang.csv', customersCsv(), 'text/csv;charset=utf-8'));
+    $('#custBody').addEventListener('click', e => {
+        const b = e.target.closest('button[data-act]');
+        if (!b) return;
+        const id = b.closest('tr').dataset.id;
+        if (b.dataset.act === 'open') openCustomer(id);
+        else if (b.dataset.act === 'neworder') openOrder(null, { custId: id });
+    });
+    $('#cuBody').addEventListener('click', onCuClick);
+    $('#cuClose').addEventListener('click', () => $('#custModal').classList.remove('open'));
+    // tổng quan
+    $('#dashRange').addEventListener('change', e => { dash.range = e.target.value; renderDash(); });
+    $('#dwQuery').addEventListener('input', renderLookup);
+    $('#dashInsights').addEventListener('click', e => {
+        const z = e.target.closest('[data-zalo]');
+        if (z) { const o = state.orders.find(x => x.id === z.dataset.zalo); if (o) openZaloText(readyText(o)); return; }
+        const g = e.target.closest('[data-goto]');
+        if (g) showTab(g.dataset.goto);
+    });
+}
+
+/* ================= NHẬP TÌM KIẾM BẰNG GIỌNG NÓI ================= */
+function startVoiceSearch() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { toast('Trình duyệt này chưa hỗ trợ nhập giọng nói. Hãy dùng Chrome và cho phép micro.', true); return; }
+    const rec = new SR();
+    rec.lang = 'vi-VN'; rec.interimResults = false; rec.maxAlternatives = 1;
+    const btn = $('#btnMic');
+    btn.classList.add('active');
+    toast('Đang nghe... Hãy đọc tên model điện thoại.');
+    rec.onresult = e => {
+        const text = e.results[0][0].transcript || '';
+        $('#globalSearch').value = text;
+        $('#globalSearch').dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    rec.onerror = e => toast('Micro không hoạt động: ' + e.error + '. Kiểm tra quyền micro của trình duyệt.', true);
+    rec.onend = () => btn.classList.remove('active');
+    try { rec.start(); } catch (e) { btn.classList.remove('active'); toast('Không mở được micro. Hãy thử tải lại trang.', true); }
+}
+
+/* ================= KHỞI TẠO ================= */
+function init() {
+    loadState();
+    rebuildIndex();
+    $('#shopTitle').textContent = state.settings.shop || 'ĐỨC MẠNH MOBILE';
+    setSaveStatus();
+    updateLowBadge();
+
+    $('#tabs').addEventListener('click', e => { const b = e.target.closest('.tab-btn'); if (b) showTab(b.dataset.tab); });
+    $('#btnSave').addEventListener('click', () => persist(true));
+    $('#btnFirebaseConnect').addEventListener('click', () => {
+        try { connectFirebase($('#fbConfigInput').value); }
+        catch (e) { firebaseStatus('Không kết nối được: ' + e.message, true); }
+    });
+    $('#btnFirebaseDisconnect').addEventListener('click', disconnectFirebase);
+    $('#btnMic').addEventListener('click', startVoiceSearch);
+
+    $('#globalSearch').addEventListener('input', e => {
+        ui.search = e.target.value.trim();
+        if (ui.tab !== 'quote') showTab('quote');
+        renderSidebar();
+        if (ui.search.length > 2) {
+            const first = $('#modelList .model-btn');
+            if (first) first.click();
+        }
+    });
+
+    // báo giá
+    const tb = $('#priceTableBody');
+    tb.addEventListener('change', onQuoteChange);
+    tb.addEventListener('click', onQuoteClick);
+    $('#btnResetModel').addEventListener('click', () => {
+        confirmDialog('Đặt lại toàn bộ giá của "' + MODEL_INDEX[ui.key].name + '" về giá mẫu? (Tồn kho giữ nguyên)', () => {
+            delete state.overrides[ui.key];
+            markDirty();
+            renderQuote();
+            toast('Đã đặt lại giá mẫu');
+        });
+    });
+    $('#btnZalo').addEventListener('click', () => { $('#zaloText').value = buildZaloText(); $('#zaloModal').classList.add('open'); });
+    $('#zaloClose').addEventListener('click', () => $('#zaloModal').classList.remove('open'));
+    $('#zaloCopy').addEventListener('click', () => {
+        copyText($('#zaloText').value, ok => {
+            toast(ok ? 'Đã sao chép! Dán thẳng vào Zalo gửi khách.' : 'Không sao chép được — hãy bôi đen và copy tay.', !ok);
+            if (ok) $('#zaloModal').classList.remove('open');
+        });
+    });
+
+    // bảng giá tổng
+    $('#mxBrand').addEventListener('change', e => { mx.brand = e.target.value; renderMatrix(); });
+    $('#mxSearch').addEventListener('input', e => { mx.search = e.target.value; renderMatrix(); });
+    $$('input[name="mxMode"]').forEach(r => r.addEventListener('change', e => { mx.mode = e.target.value; renderMatrix(); }));
+    $('#mxTable').addEventListener('change', onMatrixChange);
+    $('#mxTable').addEventListener('click', onMatrixClick);
+    $('#btnMxCsv').addEventListener('click', () => {
+        const keys = mx.brand === '*' ? allKeys() : modelsOf(mx.brand).map(m => keyOf(mx.brand, m.name));
+        download('bang-gia-' + (mx.brand === '*' ? 'tat-ca' : norm(mx.brand)) + '.csv', pricesCsv(keys), 'text/csv;charset=utf-8');
+    });
+
+    // kho
+    $('#stBrand').addEventListener('change', () => fillModelSelect($('#stBrand'), $('#stModel')));
+    $('#stSubmit').addEventListener('click', onStockSubmit);
+    $('#stFilterBrand').addEventListener('change', e => { stf.brand = e.target.value; renderStock(); });
+    $('#stFilterText').addEventListener('input', e => { stf.text = e.target.value; renderStock(); $('#stFilterText').focus(); });
+    $('#stOnlyLow').addEventListener('change', e => { stf.onlyLow = e.target.checked; renderStock(); });
+    $('#stockBody').addEventListener('change', onStockBodyChange);
+    $('#stockBody').addEventListener('click', onStockBodyClick);
+    $('#btnStockCsv').addEventListener('click', () => download('ton-kho.csv', stockCsv(), 'text/csv;charset=utf-8'));
+
+    // công cụ
+    $('#blApply').addEventListener('click', applyBulk);
+    $('#amAdd').addEventListener('click', addModel);
+    $('#customList').addEventListener('click', e => {
+        const b = e.target.closest('[data-del]');
+        if (!b) return;
+        const row = b.closest('.row-item');
+        const brand = row.dataset.brand, name = row.dataset.name;
+        confirmDialog('Xoá model "' + name + '" đã thêm? (Giá và kho đã nhập cho model này cũng bị xoá)', () => {
+            state.customModels[brand] = (state.customModels[brand] || []).filter(m => m.name !== name);
+            if (!state.customModels[brand].length) delete state.customModels[brand];
+            const k = keyOf(brand, name);
+            delete state.overrides[k]; delete state.inventory[k];
+            rebuildIndex();
+            if (ui.key === k) { ui.brand = 'Apple'; ui.key = keyOf('Apple', 'iPhone 15 Pro Max'); }
+            markDirty();
+            renderTools();
+        });
+    });
+    ['shName', 'shPhone', 'shAddr', 'shTerms'].forEach(id => $('#' + id).addEventListener('input', () => {
+        state.settings.shop = $('#shName').value;
+        state.settings.phone = $('#shPhone').value;
+        state.settings.addr = $('#shAddr').value;
+        state.settings.terms = $('#shTerms').value;
+        $('#shopTitle').textContent = state.settings.shop || 'ĐỨC MẠNH MOBILE';
+        markDirty();
+    }));
+    $('#btnExportJson').addEventListener('click', () => {
+        const d = new Date();
+        download('sao-luu-duc-manh-mobile-' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '.json',
+            JSON.stringify({ app: 'duc-manh-mobile', exportedAt: d.toISOString(), state: state }, null, 1), 'application/json');
+    });
+    $('#btnImport').addEventListener('click', () => $('#importFile').click());
+    $('#importFile').addEventListener('change', e => { if (e.target.files[0]) importFile(e.target.files[0]); e.target.value = ''; });
+    $('#btnAllCsv').addEventListener('click', () => download('bang-gia-tat-ca.csv', pricesCsv(allKeys()), 'text/csv;charset=utf-8'));
+    $('#btnResetPrices').addEventListener('click', () => confirmDialog('Đặt lại TOÀN BỘ giá về giá mẫu? Mọi giá bạn đã sửa sẽ mất. Kho không bị ảnh hưởng.', () => {
+        state.overrides = {}; markDirty(); toast('Đã đặt lại toàn bộ giá'); renderTools();
+    }));
+    $('#btnResetAll').addEventListener('click', () => confirmDialog('Xoá TOÀN BỘ dữ liệu (giá đã sửa, kho, lịch sử, model tự thêm, thông tin cửa hàng)? Không thể hoàn tác — nên xuất sao lưu trước.', () => {
+        state = defaultState();
+        rebuildIndex();
+        persist(false);
+        afterDataReplace();
+        toast('Đã xoá toàn bộ dữ liệu');
+    }));
+
+    // dialog
+    $('#dlgCancel').addEventListener('click', closeDlg);
+    $('#dlgOk').addEventListener('click', () => { const cb = dlgCb; closeDlg(); if (cb) cb(); });
+    $$('.modal').forEach(m => m.addEventListener('click', e => {
+        if (e.target === m && m.id !== 'orderModal' && m.id !== 'custModal') { m.classList.remove('open'); if (m.id === 'dlg') dlgCb = null; }
+    }));
+
+    initCRM();
+    const savedFirebase = localStorage.getItem(FB_CONFIG_KEY);
+    if (savedFirebase) {
+        $('#fbConfigInput').value = savedFirebase;
+        try { connectFirebase(savedFirebase); } catch (e) { firebaseStatus('Cần kiểm tra lại cấu hình Firebase: ' + e.message, true); }
+    }
+    showTab('dash');
+}
+init();
+
+})();
+</script>
+</body>
+</html>
